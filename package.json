@@ -1,0 +1,66 @@
+{
+  "name": "bezier-slider",
+  "version": "1.0.0",
+  "description": "二次贝塞尔弧形图标滑块组件，支持原生 JavaScript、Vue 3 和 React",
+  "main": "dist/bezier-slider.mjs",
+  "module": "dist/bezier-slider.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/bezier-slider.mjs"
+    },
+    "./vue": {
+      "import": "./dist/bezier-slider.vue.mjs"
+    },
+    "./react": {
+      "import": "./dist/bezier-slider.react.mjs"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+  },
+  "dependencies": {
+    "vue": "^3.4.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-vue": "^4.6.2",
+    "vite": "^4.5.2"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "vue": ">=3.4"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "slider",
+    "carousel",
+    "arc-slider",
+    "bezier",
+    "vue3",
+    "react",
+    "icon-slider"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jimole775/bezier-slider.git"
+  }
+}
