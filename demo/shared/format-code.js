@@ -70,11 +70,10 @@ function buildIconsBlock(indent = '') {
 
 export function formatNativeCode(params, options = {}) {
     const cfg = buildSliderConfig(params);
-    const { trackMode = 'svg', displaySize } = options;
+    const { displaySize } = options;
     const sliderOptions = buildSliderOptions(cfg);
 
-    if (trackMode === 'bg') {
-        return `<!-- 复制 HTML + 下方 script 即可运行 -->
+    return `<!-- 复制 HTML + 下方 script 即可运行 -->
 ${buildContainerHtml(displaySize)}
 
 <script type="module">
@@ -93,41 +92,16 @@ ${sliderOptions},
   }
 });
 </script>`;
-    }
-
-    return `<!-- 复制 HTML + 下方 script 即可运行 -->
-${buildContainerHtml(displaySize)}
-
-<script type="module">
-import BezierSlider, { renderDefaultTrack } from 'bezier-slider';
-
-${buildIconsBlock()}
-
-const container = document.getElementById('slider');
-
-new BezierSlider({
-  container,
-  icons,
-${sliderOptions},
-  onLayout: (layout) => renderDefaultTrack(container, layout)
-});
-</script>`;
 }
 
 export function formatReactCode(params, options = {}) {
     const cfg = buildSliderConfig(params);
-    const { trackMode = 'svg', displaySize } = options;
+    const { displaySize } = options;
     const { width, height } = buildContainerSize(displaySize);
     const sliderOptions = buildReactProps(cfg);
     const icons = formatObjectBlock(ICONS, 6);
-    const importLine = trackMode === 'bg'
-        ? "import BezierSlider from 'bezier-slider/react';"
-        : "import BezierSlider, { renderDefaultTrack } from 'bezier-slider/react';";
-    const renderTrackProp = trackMode === 'bg'
-        ? '      renderTrack={null}'
-        : '      renderTrack={renderDefaultTrack}';
 
-    return `${importLine}
+    return `import BezierSlider from 'bezier-slider/react';
 
 const icons = ${icons};
 
@@ -137,7 +111,7 @@ export function SliderDemo() {
       style={{ position: 'relative', overflow: 'visible', width: ${width}, height: ${height} }}
       icons={icons}
 ${sliderOptions}
-${renderTrackProp}
+      renderTrack={null}
       onSelect={handleSelect}
       onSlideEnd={handleSlideEnd}
     />
@@ -147,11 +121,10 @@ ${renderTrackProp}
 
 export function formatVueCode(params, options = {}) {
     const cfg = buildSliderConfig(params);
-    const { trackMode = 'svg', displaySize } = options;
+    const { displaySize } = options;
     const { width, height } = buildContainerSize(displaySize);
     const sliderOptions = buildVueProps(cfg);
     const icons = formatObjectBlock(ICONS, 2);
-    const renderTrackAttr = trackMode === 'bg' ? '\n    :render-track="null"' : '';
 
     return `<script setup>
 import { BezierSlider } from 'bezier-slider/vue';
@@ -163,7 +136,8 @@ const icons = ${icons};
   <BezierSlider
     :root-style="{ position: 'relative', overflow: 'visible', width: '${width}px', height: '${height}px' }"
     :icons="icons"
-${sliderOptions}${renderTrackAttr}
+${sliderOptions}
+    :render-track="null"
     @select="onSelect"
     @slide-end="onSlideEnd"
   />

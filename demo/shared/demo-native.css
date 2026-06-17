@@ -1,28 +1,3 @@
-.mode-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0 16px;
-}
-
-.mode-tabs button {
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.75);
-    padding: 8px 16px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.mode-tabs button.active {
-    background: rgba(252, 211, 77, 0.2);
-    border-color: #fcd34d;
-    color: #fcd34d;
-}
-
 .demo-options {
     display: flex;
     align-items: center;
@@ -31,8 +6,6 @@
     color: rgba(255, 255, 255, 0.65);
     font-size: 13px;
 }
-
-.demo-options.hidden { visibility: hidden; }
 
 .bg-options {
     display: flex;
@@ -53,8 +26,6 @@
     font-size: 11px;
     color: rgba(255, 255, 255, 0.45);
 }
-
-.bg-options.hidden { display: none; }
 
 .bg-upload-btn {
     display: inline-flex;

@@ -543,7 +543,7 @@ console.log(BezierSlider.DEFAULTS);
 | `visibleIconCount` | number | `2` | 可见图标上限 |
 | `centerT` | number | `0.72` | 滑轨中心点 |
 | `initialIndex` | number | `0` | 初始化时停在中心的图标下标 |
-| `sensitivity` | number | `0.008` | 拖动灵敏度 |
+| `sensitivity` | number | `0.004` | 拖动灵敏度 |
 | `snapDuration` | number | `300` | 吸附动画时长（ms） |
 | `rubberBandLimit` | number | `0.42` | 边界拉扯最大越界量 |
 | `rubberBandDuration` | number | `420` | 边界回弹动画时长（ms） |

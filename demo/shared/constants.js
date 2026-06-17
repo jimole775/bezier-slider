@@ -29,11 +29,6 @@ export const PARAM_SCHEMA = [
     { section: '控制点 P2', path: 'bezier.fitted.p2.y', label: '终点 Y', min: -1, max: 2, step: 0.01 }
 ];
 
-export const MODE_DESC = {
-    svg: 'SVG 滑轨由 renderDefaultTrack 绘制；左侧调 bezier 可实时改弧度。',
-    bg: '上传背景图按原图比例 1:1 展示；滑轨在独立图层，trackScale>1 可伸出背景外。'
-};
-
 export const RESET_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
     <path d="M3 3v5h5"/>

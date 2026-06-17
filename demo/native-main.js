@@ -1,5 +1,5 @@
-import { BezierSlider, renderDefaultTrack } from '../src/index.js';
-import { ICONS, MODE_DESC, PARAM_SCHEMA, RESET_ICON_SVG, COPY_ICON_SVG } from './shared/constants.js';
+import { BezierSlider } from '../src/index.js';
+import { ICONS, PARAM_SCHEMA, RESET_ICON_SVG, COPY_ICON_SVG } from './shared/constants.js';
 import {
     createDefaultParams,
     buildSliderConfig,
@@ -13,13 +13,11 @@ import { bindCopyButton, bindResetButton } from './shared/clipboard.js';
 import { CODE_FORMATTERS } from './shared/format-code.js';
 import {
     applyComposeLayout,
-    fitDefaultSvgSize,
     fitImageDisplaySize,
     getDisplaySizeHint
 } from './shared/container-size.js';
 import {
     applyBgLayer,
-    clearBgLayer,
     clearTrackArtifacts,
     DEFAULT_BG_NATURAL,
     loadImageNaturalSize,
@@ -38,17 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const sliderMount = document.getElementById('sliderMount');
     const selectedIcon = document.getElementById('selectedIcon');
     const selectedName = document.getElementById('selectedName');
-    const modeDesc = document.getElementById('modeDesc');
-    const bgOptions = document.getElementById('bgOptions');
     const bgUpload = document.getElementById('bgUpload');
     const bgFileName = document.getElementById('bgFileName');
     const bgSizeHint = document.getElementById('bgSizeHint');
     const bgReset = document.getElementById('bgReset');
-    const debugOption = document.getElementById('debugOption');
     const showDebugTrack = document.getElementById('showDebugTrack');
     const legendExtra = document.getElementById('legendExtra');
     const legendCenterT = document.getElementById('legendCenterT');
-    const tabButtons = document.querySelectorAll('.mode-tabs button');
     const codeTabButtons = document.querySelectorAll('#codeTabs button');
     const paramsForm = document.getElementById('paramsForm');
     const codeContent = document.getElementById('codeContent');
@@ -57,27 +51,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const geometryPresetBar = document.getElementById('geometryPresetBar');
 
     let slider = null;
-    let currentMode = 'svg';
     let currentCodeTab = 'native';
     let params = createDefaultParams(BezierSlider.DEFAULTS);
     let rebuildTimer = null;
     let customBgUrl = null;
-    let customBgName = '';
     let bgNaturalSize = { ...DEFAULT_BG_NATURAL };
-    let displaySize = fitDefaultSvgSize();
+    let displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
 
     function getActiveBgUrl() {
         return customBgUrl;
     }
 
+    function updateLegendExtra() {
+        legendExtra.textContent = customBgUrl ? '自定义背景 + bezier 对齐' : '背景图 + bezier 对齐';
+    }
+
     function updateBgSizeHint() {
         if (!bgSizeHint) return;
         const hint = getDisplaySizeHint(displaySize, params.trackScale);
-        if (currentMode === 'bg') {
-            bgSizeHint.textContent = `背景 ${hint.width}×${hint.height}px · 滑轨容器 ${hint.trackWidth}×${hint.trackHeight}px（trackScale=${hint.trackScale}）`;
-        } else {
-            bgSizeHint.textContent = '';
-        }
+        bgSizeHint.textContent = `背景 ${hint.width}×${hint.height}px · 滑轨容器 ${hint.trackWidth}×${hint.trackHeight}px（trackScale=${hint.trackScale}）`;
     }
 
     function applyDisplayLayout() {
@@ -86,10 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getCodePreviewOptions() {
-        const sizeHint = getDisplaySizeHint(displaySize, params.trackScale);
         return {
-            trackMode: currentMode === 'bg' ? 'bg' : 'svg',
-            displaySize: sizeHint
+            displaySize: getDisplaySizeHint(displaySize, params.trackScale)
         };
     }
 
@@ -107,12 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateParamsPreview();
     }
 
-    function refreshBgOverlays() {
-        if (currentMode !== 'bg' || !slider) return;
-        const layout = slider.getLayoutState();
-        updateDebugTrack(sliderMount, layout, showDebugTrack.checked, BezierSlider);
-    }
-
     async function resolveBgNaturalSize(url) {
         if (!url) return { ...DEFAULT_BG_NATURAL };
         try {
@@ -124,40 +108,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function applyBackground(url, fileName = '') {
         customBgUrl = url;
-        customBgName = fileName;
         bgFileName.textContent = fileName || '内置示例背景';
         bgReset.classList.toggle('hidden', !url);
+        updateLegendExtra();
 
-        if (currentMode === 'bg') {
-            bgNaturalSize = await resolveBgNaturalSize(url);
-            displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
-            applyDisplayLayout();
-            applyBgLayer(carouselBg, url);
-            if (slider) {
-                refreshBgOverlays();
-            } else {
-                createSlider('bg', false);
-            }
+        bgNaturalSize = await resolveBgNaturalSize(url);
+        displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
+        applyDisplayLayout();
+        applyBgLayer(carouselBg, url);
+        if (slider) {
+            slider.initLayout();
+        } else {
+            createSlider(false);
         }
     }
 
-    function createSlider(mode, keepIndex) {
+    function createSlider(keepIndex) {
         const prevIndex = keepIndex && slider ? slider.getCurrentIndex() : params.initialIndex;
 
         slider?.destroy();
         clearTrackArtifacts(sliderMount);
 
-        const isBgMode = mode === 'bg';
-
-        if (isBgMode) {
-            displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
-            applyDisplayLayout();
-            applyBgLayer(carouselBg, getActiveBgUrl());
-        } else {
-            clearBgLayer(carouselBg);
-            displaySize = fitDefaultSvgSize();
-            applyDisplayLayout();
-        }
+        displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
+        applyDisplayLayout();
+        applyBgLayer(carouselBg, getActiveBgUrl());
 
         slider = new BezierSlider({
             container: sliderMount,
@@ -170,11 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             onSlideEnd: (index) => console.log('停留下标:', index),
             onLayout: (layout) => {
-                if (isBgMode) {
-                    updateDebugTrack(sliderMount, layout, showDebugTrack.checked, BezierSlider);
-                } else {
-                    renderDefaultTrack(sliderMount, layout);
-                }
+                updateDebugTrack(sliderMount, layout, showDebugTrack.checked, BezierSlider);
             }
         });
 
@@ -187,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(rebuildTimer);
         rebuildTimer = setTimeout(() => {
             updateParamsPreview();
-            createSlider(currentMode, true);
+            createSlider(true);
         }, 80);
     }
 
@@ -220,21 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         scheduleRebuild();
     }
 
-    function setMode(mode) {
-        currentMode = mode;
-        tabButtons.forEach((btn) => {
-            btn.classList.toggle('active', btn.dataset.mode === mode);
-        });
-        modeDesc.textContent = MODE_DESC[mode];
-        bgOptions.classList.toggle('hidden', mode !== 'bg');
-        debugOption.classList.toggle('hidden', mode !== 'bg');
-        legendExtra.textContent = mode === 'bg'
-            ? (customBgUrl ? '自定义背景 + bezier 对齐' : '背景图 + bezier 对齐')
-            : '';
-        updateParamsPreview();
-        createSlider(mode, false);
-    }
-
     const unbindPanel = bindParamsPanel(paramsForm, {
         getParams: () => params,
         onParamChange: handleParamChange,
@@ -247,11 +202,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const unbindCopy = bindCopyButton(codeCopyBtn, () => codeContent.textContent);
 
     applyDisplayLayout();
+    applyBgLayer(carouselBg, null);
+    updateLegendExtra();
     updateParamsPreview();
-
-    tabButtons.forEach((btn) => {
-        btn.addEventListener('click', () => setMode(btn.dataset.mode));
-    });
+    createSlider(false);
 
     codeTabButtons.forEach((btn) => {
         btn.addEventListener('click', () => setCodeTab(btn.dataset.code));
@@ -281,23 +235,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     showDebugTrack.addEventListener('change', () => {
-        if (currentMode === 'bg' && slider) {
+        if (slider) {
             updateDebugTrack(sliderMount, slider.getLayoutState(), showDebugTrack.checked, BezierSlider);
         }
     });
 
     window.addEventListener('resize', () => {
-        if (currentMode === 'bg') {
-            displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
-        } else {
-            displaySize = fitDefaultSvgSize();
-        }
+        displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
         applyDisplayLayout();
         slider?.initLayout();
         updateParamsPreview();
     });
-
-    setMode('svg');
 
     window.addEventListener('beforeunload', () => {
         unbindPanel();

@@ -10,13 +10,8 @@
 <body class="demo-native">
     <h1 class="title">弧形图标滑块 Demo</h1>
 
-    <div class="mode-tabs">
-        <button type="button" class="active" data-mode="svg">默认 SVG 滑轨</button>
-        <button type="button" data-mode="bg">背景图滑轨</button>
-    </div>
-
     <p class="demo-desc" id="modeDesc">
-        使用内置 renderDefaultTrack 在 onLayout 中绘制 SVG 滑轨。
+        上传背景图按原图比例 1:1 展示；滑轨在独立图层，trackScale&gt;1 可伸出背景外。
     </p>
 
     <div class="demo-layout">
@@ -35,7 +30,7 @@
         </aside>
 
         <div class="demo-stage">
-            <div class="bg-options hidden" id="bgOptions">
+            <div class="bg-options" id="bgOptions">
                 <label class="bg-upload-btn">
                     <input type="file" id="bgUpload" accept="image/*" />
                     上传背景图
@@ -44,7 +39,7 @@
                 <span class="bg-size-hint" id="bgSizeHint"></span>
                 <button type="button" class="bg-reset-btn hidden" id="bgReset">恢复示例</button>
             </div>
-            <label class="demo-options hidden" id="debugOption">
+            <label class="demo-options" id="debugOption">
                 <input type="checkbox" id="showDebugTrack" checked />
                 显示轨迹调试线
             </label>

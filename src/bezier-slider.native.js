@@ -32,7 +32,7 @@
         tStep: 0.33,              // 相邻图标沿曲线的参数间距，越大间隔越远
         visibleIconCount: 2,      // 拖动区域内最多同时可见的图标数
         centerT: 0.72,            // 滑轨中心点（固定参数 t，0~1）
-        sensitivity: 0.008,       // 拖动灵敏度
+        sensitivity: 0.004,       // 拖动灵敏度
         snapDuration: 300,        // 吸附动画时长（ms）
         rubberBandLimit: 0.42,    // 边界拉扯最大越界量（offset 单位）
         rubberBandDuration: 420,  // 越界松手后回弹动画时长（ms）
