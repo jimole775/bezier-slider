@@ -2,7 +2,7 @@
 
 基于**二次贝塞尔曲线**的弧形图标滑块组件。图标沿平滑弧线排列，支持拖动、吸附、边界回弹，以及近大远小的视觉反馈。
 
-[demo](https://jimole775.github.io/bezier-slider/)
+[demo](https://jimole775.github.io/bezier-slider/demo)
 
 ---
 
