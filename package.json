@@ -1,6 +1,6 @@
 {
   "name": "bezier-slider",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "二次贝塞尔弧形图标滑块组件，支持原生 JavaScript、Vue 3 和 React",
   "main": "dist/bezier-slider.mjs",
   "module": "dist/bezier-slider.mjs",
