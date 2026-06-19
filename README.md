@@ -2,7 +2,7 @@
 
 基于**二次贝塞尔曲线**的弧形图标滑块组件。图标沿平滑弧线排列，支持拖动、吸附、边界回弹，以及近大远小的视觉反馈。
 
-> **Arc** 指弧形滑轨（一段曲线，非整圆）；**Bezier** 指轨迹由二次贝塞尔（`Q` 命令）描述。
+[demo](https://jimole775.github.io/bezier-slider/demo)
 
 ---
 
@@ -21,38 +21,6 @@
 | 弧度可配 | 支持整体平滑度、左/右端高度、局部下弯角度等 |
 | 多种图标 | 支持 emoji、图片、SVG 路径、SVG 文件、font-icon |
 | 滑动防选中 | 拖动过程中禁用页面文字框选 |
-
----
-
-## 文件结构
-
-```
-slider-master/
-├── demo/
-│   ├── index.html                  # 演示页（滑轨预览 + 参数调节 + 代码输出）
-│   ├── native-main.js              # 演示入口
-│   └── shared/                     # 演示公共样式与工具
-├── src/
-│   ├── bezier-slider.native.js     # 核心：拖动交互、图标布局、贝塞尔轨迹（不含滑轨绘制）
-│   ├── track-renderer.js           # 可选：默认 SVG 滑轨渲染（ensure / update / renderDefaultTrack）
-│   ├── index.js                    # 包入口 → export BezierSlider + 滑轨工具
-│   ├── native-bridge.js            # 框架封装共享：pickNativeOptions / mountNativeSlider
-│   ├── vue-component.js            # Vue 包入口 → export BezierSlider 组件 + 滑轨工具
-│   ├── react-component.js          # React 包入口 → export BezierSlider 组件 + 滑轨工具
-│   └── components/
-│       ├── BezierSlider.vue        # Vue 3 薄封装（内部使用 native 核心）
-│       └── BezierSlider.jsx        # React 薄封装（内部使用 native 核心）
-├── dist/                           # npm run build 生成（.gitignore，使用前需先 build）
-│   ├── bezier-slider.mjs           # import 'bezier-slider'
-│   ├── bezier-slider.vue.mjs       # import 'bezier-slider/vue'
-│   ├── bezier-slider.react.mjs     # import 'bezier-slider/react'
-│   └── style.css                   # Vue 组件样式
-├── package.json
-├── package-lock.json
-├── vite.config.js
-├── .gitignore
-└── README.md
-```
 
 ---
 
@@ -649,16 +617,6 @@ console.log(BezierSlider.DEFAULTS);
   src: url('./fonts/iconfont.woff2') format('woff2');
 }
 ```
-
----
-
-## 技术说明
-
-- 滑轨类型：**二次贝塞尔**（`M … Q …`），非三次贝塞尔，非折线近似
-- 图标位置：沿曲线参数 `t` 均匀偏移，中心固定在 `centerT`
-- 拖动区域：初始化时通过 `container.clientWidth / clientHeight` 动态测量
-- 边界回弹：越界拖动时阻尼递增，松手后以 `easeOutBack` 回弹至合法边界
-- 无第三方依赖，纯原生 JavaScript + Vue 3
 
 ---
 
