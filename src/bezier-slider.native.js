@@ -43,8 +43,8 @@
             // 基础二次贝塞尔三控制点（归一化坐标 0~1，y 越大越低）
             fitted: {
                 p0: { x: 0.015, y: 0.48 },   // 左端略低（接近原默认高度）
-                p1: { x: 0.48, y: 1.08 },    // 控制点下压，保留滑轨弧度
-                p2: { x: 0.985, y: -0.02 }   // 右端偏高
+                p1: { x: 0.48, y: 0.48 },    // 控制点 Y 直接参与弧度（不再被 rightTilt 覆盖）
+                p2: { x: 0.985, y: 0.48 }    // 右端 Y 为基准，rightEndOffset 在其上叠加
             },
             curveSmooth: 0.1,             // 略平滑，弧线仍清晰
             rightTilt: 1,
@@ -373,25 +373,24 @@
     }
 
     /**
-     * 右端高度微调：控制右端相对左端的上扬幅度
-     * 通过调整 P1、P2 的 y 实现，保持二次贝塞尔类型不变
+     * 右端高度微调：仅在 fitted 基础上叠加 P2 的 Y 偏移
+     * 不修改 P1，以便控制点 P1 的 X/Y 滑块直接生效
      */
     function easeRightTilt(bezier, tilt, rightEndOffset) {
-        const leftY = bezier.p0.y;
-        const targetP2Y = leftY - rightEndOffset;
-        const targetP1 = {
-            x: 0.45,
-            y: (leftY + targetP2Y) / 2 + 0.05
-        };
+        if (!tilt) {
+            return {
+                p0: { ...bezier.p0 },
+                p1: { ...bezier.p1 },
+                p2: { ...bezier.p2 }
+            };
+        }
+
         return {
-            p0: bezier.p0,
-            p1: {
-                x: bezier.p1.x + (targetP1.x - bezier.p1.x) * tilt,
-                y: bezier.p1.y + (targetP1.y - bezier.p1.y) * tilt
-            },
+            p0: { ...bezier.p0 },
+            p1: { ...bezier.p1 },
             p2: {
                 x: bezier.p2.x,
-                y: bezier.p2.y + (targetP2Y - bezier.p2.y) * tilt
+                y: bezier.p2.y - rightEndOffset * tilt
             }
         };
     }

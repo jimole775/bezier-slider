@@ -1,9 +1,12 @@
 import { PARAM_SCHEMA } from './constants.js';
 import { getByPath, paramFieldId } from './param-utils.js';
+import { parseControlPointPath } from './track-helpers.js';
 
 export function bindParamsPanel(paramsForm, {
     getParams,
     onParamChange,
+    onControlPointAdjustStart,
+    onControlPointAdjustEnd,
     schema = PARAM_SCHEMA,
     fadeSectionTitle = '动画',
     animationCheckboxes = [
@@ -47,6 +50,23 @@ export function bindParamsPanel(paramsForm, {
             onParamChange(field.path, num);
             output.textContent = String(num);
         });
+
+        const controlHint = parseControlPointPath(field.path);
+        if (controlHint) {
+            row.classList.add('param-row-cp');
+            row.dataset.controlPoint = controlHint.point;
+            row.dataset.controlAxis = controlHint.axis;
+
+            input.addEventListener('pointerdown', () => {
+                onControlPointAdjustStart?.(controlHint);
+                window.addEventListener('pointerup', () => {
+                    onControlPointAdjustEnd?.();
+                }, { once: true });
+            });
+            input.addEventListener('blur', () => {
+                onControlPointAdjustEnd?.();
+            });
+        }
 
         sections.get(field.section).appendChild(row);
     });

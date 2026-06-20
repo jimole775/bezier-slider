@@ -57,6 +57,29 @@ document.addEventListener('DOMContentLoaded', () => {
     let customBgUrl = null;
     let bgNaturalSize = { ...DEFAULT_BG_NATURAL };
     let displaySize = fitImageDisplaySize(bgNaturalSize.width, bgNaturalSize.height);
+    let activeControl = null;
+
+    function refreshDebugOverlay() {
+        if (!slider) return;
+        updateDebugTrack(
+            sliderMount,
+            slider.getLayoutState(),
+            showDebugTrack.checked,
+            BezierSlider,
+            activeControl
+        );
+    }
+
+    function setActiveControl(hint) {
+        activeControl = hint;
+        refreshDebugOverlay();
+        paramsForm.querySelectorAll('.param-row-cp').forEach((row) => {
+            const match = activeControl
+                && row.dataset.controlPoint === activeControl.point
+                && row.dataset.controlAxis === activeControl.axis;
+            row.classList.toggle('is-adjusting', Boolean(match));
+        });
+    }
 
     function getActiveBgUrl() {
         return customBgUrl;
@@ -144,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             onSlideEnd: (index) => console.log('停留下标:', index),
             onLayout: (layout) => {
-                updateDebugTrack(sliderMount, layout, showDebugTrack.checked, BezierSlider);
+                updateDebugTrack(sliderMount, layout, showDebugTrack.checked, BezierSlider, activeControl);
             }
         });
 
@@ -193,6 +216,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const unbindPanel = bindParamsPanel(paramsForm, {
         getParams: () => params,
         onParamChange: handleParamChange,
+        onControlPointAdjustStart: setActiveControl,
+        onControlPointAdjustEnd: () => setActiveControl(null),
         schema: PARAM_SCHEMA
     });
     const unbindGeometryBar = bindGeometryPresetBar(geometryPresetBar, {
@@ -235,9 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     showDebugTrack.addEventListener('change', () => {
-        if (slider) {
-            updateDebugTrack(sliderMount, slider.getLayoutState(), showDebugTrack.checked, BezierSlider);
-        }
+        refreshDebugOverlay();
     });
 
     window.addEventListener('resize', () => {

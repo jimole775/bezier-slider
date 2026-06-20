@@ -80,6 +80,45 @@
     height: 100%;
     pointer-events: none;
     z-index: 2;
+    overflow: visible;
+}
+
+.debug-track .debug-point-label,
+.debug-track .debug-axis-label,
+.debug-track .debug-point-hint {
+    pointer-events: none;
+    user-select: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.debug-track .debug-point-hint {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.debug-track .debug-axis-label {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.debug-track .debug-point-pulse {
+    animation: debug-point-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes debug-point-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); transform-origin: center; transform-box: fill-box; }
+    50% { opacity: 0.75; transform: scale(1.25); transform-origin: center; transform-box: fill-box; }
+}
+
+.param-row-cp.is-adjusting {
+    background: rgba(252, 211, 77, 0.08);
+    border-radius: 8px;
+    margin: 0 -6px;
+    padding: 4px 6px;
+}
+
+.param-row-cp.is-adjusting label {
+    color: #fcd34d;
 }
 
 .legend {

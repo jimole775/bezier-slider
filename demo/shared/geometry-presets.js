@@ -86,8 +86,8 @@ export const GEOMETRY_PRESETS = [
         bezier: {
             fitted: {
                 p0: { x: 0.015, y: 0.48 },
-                p1: { x: 0.48, y: 1.08 },
-                p2: { x: 0.985, y: -0.02 }
+                p1: { x: 0.48, y: 0.48 },
+                p2: { x: 0.985, y: 0.48 }
             },
             curveSmooth: 0.1,
             rightTilt: 1,
