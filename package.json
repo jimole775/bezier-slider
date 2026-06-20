@@ -18,6 +18,8 @@
   },
   "scripts": {
     "build": "vite build",
+    "build:demo": "node scripts/publish-demo-pages.mjs",
+    "preview:demo": "vite preview --config vite.demo.config.js",
     "dev": "vite",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"

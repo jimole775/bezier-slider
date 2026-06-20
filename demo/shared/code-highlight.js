@@ -1,5 +1,4 @@
 import hljs from 'highlight.js/lib/common';
-import 'highlight.js/styles/atom-one-dark.min.css';
 
 const CODE_TAB_LANGUAGES = {
     native: 'html',

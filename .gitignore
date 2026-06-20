@@ -1,5 +1,8 @@
 node_modules/
 dist/
+demo/dist/
+demo/publish/
+demo/assets/
 .DS_Store
 *.log
 .vscode/
