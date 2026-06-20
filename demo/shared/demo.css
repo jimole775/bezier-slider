@@ -99,9 +99,14 @@ body {
     z-index: 20;
     backdrop-filter: blur(8px);
     flex-shrink: 0;
+    box-sizing: border-box;
+    min-width: 200px;
+    width: 20%;
+    max-width: 20%;
+    overflow-y: auto;
 }
 
-.params-panel {
+/* .params-panel {
     width: 260px;
     overflow-y: auto;
 }
@@ -109,13 +114,14 @@ body {
 .code-panel {
     width: 320px;
     overflow-y: auto;
-}
+} */
 
 body.demo-native .params-panel {
     position: absolute;
     top: 20px;
     left: 20px;
     height: calc(100vh - 80px);
+    scrollbar-gutter: stable;
 }
 
 body.demo-native .code-panel {
@@ -236,10 +242,12 @@ body.demo-native .code-panel {
 
 .param-row {
     display: grid;
-    grid-template-columns: 100px 1fr 40px;
+    grid-template-columns: 100px 1fr 44px;
     gap: 6px;
     align-items: center;
     margin-bottom: 6px;
+    min-height: 24px;
+    width: 100%;
 }
 
 .param-row label {
@@ -247,8 +255,44 @@ body.demo-native .code-panel {
     color: rgba(255, 255, 255, 0.72);
 }
 
+.param-stepper {
+    display: grid;
+    grid-template-columns: 24px 1fr 24px;
+    gap: 4px;
+    align-items: center;
+    min-width: 0;
+}
+
+.param-step-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    touch-action: manipulation;
+    user-select: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.param-step-btn:hover {
+    background: rgba(252, 211, 77, 0.15);
+    border-color: rgba(252, 211, 77, 0.35);
+    color: #fcd34d;
+}
+
+.param-step-btn:active {
+    background: rgba(252, 211, 77, 0.25);
+}
+
 .param-row input[type="range"] {
     width: 100%;
+    min-width: 0;
     accent-color: #fcd34d;
 }
 
@@ -257,6 +301,12 @@ body.demo-native .code-panel {
     color: #fcd34d;
     text-align: right;
     font-variant-numeric: tabular-nums;
+    width: 44px;
+    min-height: 1.5em;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .param-check {
@@ -328,16 +378,28 @@ body.demo-native .code-copy-btn:focus-visible::after {
 }
 
 .code-content {
-    padding: 12px;
+    padding: 0;
     background: rgba(0, 0, 0, 0.35);
     border-radius: 8px;
     font-family: ui-monospace, Consolas, monospace;
     font-size: 11px;
     line-height: 1.5;
-    color: rgba(255, 255, 255, 0.8);
     white-space: pre-wrap;
     word-break: break-all;
     overflow-y: auto;
+    margin: 0;
+}
+
+.code-content code.hljs {
+    display: block;
+    padding: 12px;
+    background: transparent;
+    overflow: visible;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
 }
 
 body.demo-native .code-content {
@@ -376,7 +438,8 @@ body.demo-native .code-content {
     .params-panel,
     .code-panel {
         width: 100%;
-        max-width: 480px;
+        min-width: 200px;
+        max-width: 100%;
         position: static;
         max-height: none;
     }

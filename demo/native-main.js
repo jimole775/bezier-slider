@@ -11,6 +11,7 @@ import { bindParamsPanel } from './shared/params-panel.js';
 import { bindGeometryPresetBar } from './shared/geometry-preset-bar.js';
 import { bindCopyButton, bindResetButton } from './shared/clipboard.js';
 import { CODE_FORMATTERS } from './shared/format-code.js';
+import { getCodeTabLanguage, getPlainCodeText, renderHighlightedCode } from './shared/code-highlight.js';
 import {
     applyComposeLayout,
     fitImageDisplaySize,
@@ -108,7 +109,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateParamsPreview() {
         const formatter = CODE_FORMATTERS[currentCodeTab] ?? CODE_FORMATTERS.native;
-        codeContent.textContent = formatter(params, getCodePreviewOptions());
+        const source = formatter(params, getCodePreviewOptions());
+        renderHighlightedCode(codeContent, source, getCodeTabLanguage(currentCodeTab));
         legendCenterT.textContent = `centerT = ${params.centerT}`;
     }
 
@@ -224,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         onPreset: handleGeometryPreset
     });
     const unbindReset = bindResetButton(paramsReset, handleReset);
-    const unbindCopy = bindCopyButton(codeCopyBtn, () => codeContent.textContent);
+    const unbindCopy = bindCopyButton(codeCopyBtn, () => getPlainCodeText(codeContent));
 
     applyDisplayLayout();
     applyBgLayer(carouselBg, null);
