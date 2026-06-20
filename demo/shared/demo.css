@@ -140,6 +140,61 @@ body.demo-native .code-panel {
     margin-bottom: 12px;
 }
 
+.params-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.params-save {
+    position: relative;
+    flex-shrink: 0;
+    padding: 4px 10px;
+    width: 46px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(252, 211, 77, 0.35);
+    border-radius: 6px;
+    background: rgba(252, 211, 77, 0.12);
+    color: #fcd34d;
+    font-size: 11px;
+    /* line-height: 1.2; */
+    cursor: pointer;
+}
+
+.params-save:hover {
+    background: rgba(252, 211, 77, 0.22);
+    border-color: rgba(252, 211, 77, 0.5);
+}
+
+.params-save::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 1;
+}
+
+.params-save:hover::after,
+.params-save:focus-visible::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .params-panel-header h2,
 .code-panel-header h2 {
     margin: 0;

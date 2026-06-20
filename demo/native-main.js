@@ -9,6 +9,11 @@ import {
 } from './shared/param-utils.js';
 import { bindParamsPanel } from './shared/params-panel.js';
 import { bindGeometryPresetBar } from './shared/geometry-preset-bar.js';
+import {
+    buildPresetSnapshot,
+    removeSavedPreset,
+    savePresetSnapshot
+} from './shared/saved-presets.js';
 import { bindCopyButton, bindResetButton } from './shared/clipboard.js';
 import { CODE_FORMATTERS } from './shared/format-code.js';
 import { getCodeTabLanguage, getPlainCodeText, renderHighlightedCode } from './shared/code-highlight.js';
@@ -49,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const codeContent = document.getElementById('codeContent');
     const codeCopyBtn = document.getElementById('codeCopyBtn');
     const paramsReset = document.getElementById('paramsReset');
+    const paramsSave = document.getElementById('paramsSave');
     const geometryPresetBar = document.getElementById('geometryPresetBar');
 
     let slider = null;
@@ -215,6 +221,55 @@ document.addEventListener('DOMContentLoaded', () => {
         scheduleRebuild();
     }
 
+    async function applySavedPreset(preset) {
+        params = deepClone(preset.params);
+        syncParamsForm(paramsForm, params, PARAM_SCHEMA);
+
+        if (preset.bgUrl) {
+            bgNaturalSize = { ...preset.bgNaturalSize };
+            await applyBackground(preset.bgUrl, preset.bgFileName || '已存背景');
+        } else {
+            bgNaturalSize = preset.bgNaturalSize
+                ? { ...preset.bgNaturalSize }
+                : { ...DEFAULT_BG_NATURAL };
+            await applyBackground(null);
+        }
+
+        updateParamsPreview();
+        createSlider(true);
+    }
+
+    function handleDeleteSavedPreset(preset) {
+        removeSavedPreset(preset.id);
+        geometryBarApi.refresh();
+    }
+
+    function handleSavePreset() {
+        const defaultLabel = customBgUrl
+            ? (bgFileName.textContent || '我的配置')
+            : `配置 ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        const label = window.prompt('为当前配置命名', defaultLabel);
+        if (label == null || !label.trim()) return;
+
+        try {
+            const snapshot = buildPresetSnapshot({
+                label: label.trim(),
+                params,
+                bgUrl: customBgUrl,
+                bgFileName: bgFileName.textContent,
+                bgNaturalSize
+            });
+            savePresetSnapshot(snapshot);
+            geometryBarApi.refresh();
+
+            if (snapshot.bgOmitted && customBgUrl) {
+                window.alert('配置已保存。背景图过大未写入本地，加载该预设后请重新上传背景图。');
+            }
+        } catch (err) {
+            window.alert(err.message || '保存失败');
+        }
+    }
+
     const unbindPanel = bindParamsPanel(paramsForm, {
         getParams: () => params,
         onParamChange: handleParamChange,
@@ -222,10 +277,13 @@ document.addEventListener('DOMContentLoaded', () => {
         onControlPointAdjustEnd: () => setActiveControl(null),
         schema: PARAM_SCHEMA
     });
-    const unbindGeometryBar = bindGeometryPresetBar(geometryPresetBar, {
-        onPreset: handleGeometryPreset
+    const geometryBarApi = bindGeometryPresetBar(geometryPresetBar, {
+        onPreset: handleGeometryPreset,
+        onSavedPreset: applySavedPreset,
+        onDeleteSaved: handleDeleteSavedPreset
     });
     const unbindReset = bindResetButton(paramsReset, handleReset);
+    paramsSave?.addEventListener('click', handleSavePreset);
     const unbindCopy = bindCopyButton(codeCopyBtn, () => getPlainCodeText(codeContent));
 
     applyDisplayLayout();
@@ -274,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('beforeunload', () => {
         unbindPanel();
-        unbindGeometryBar();
+        geometryBarApi.destroy();
         unbindReset();
         unbindCopy();
         slider?.destroy();

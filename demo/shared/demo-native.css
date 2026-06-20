@@ -163,10 +163,77 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-items: center;
     gap: 8px;
-    max-width: min(calc(100vw - 32px), 640px);
+    max-width: min(calc(100vw - 32px), 900px);
     transform: translateX(-50%);
     pointer-events: none;
+}
+
+.geometry-preset-divider {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.geometry-preset-bar .geometry-preset-btn-saved {
+    background: rgba(59, 130, 246, 0.35);
+    border-color: rgba(147, 197, 253, 0.45);
+}
+
+.geometry-preset-bar .geometry-preset-btn-saved:hover {
+    background: rgba(59, 130, 246, 0.5);
+    border-color: rgba(191, 219, 254, 0.65);
+    color: #fff;
+}
+
+.geometry-preset-saved-item {
+    position: relative;
+    pointer-events: auto;
+    flex-shrink: 0;
+}
+
+.geometry-preset-delete {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    background: rgba(15, 23, 42, 0.92);
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.geometry-preset-saved-item:hover .geometry-preset-delete,
+.geometry-preset-saved-item:focus-within .geometry-preset-delete {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.geometry-preset-delete svg {
+    width: 9px;
+    height: 9px;
+    display: block;
+}
+
+.geometry-preset-delete:hover {
+    background: rgba(239, 68, 68, 0.95);
+    border-color: rgba(254, 202, 202, 0.85);
+    color: #fff;
+    transform: scale(1.08);
 }
 
 .geometry-preset-bar .geometry-preset-btn {

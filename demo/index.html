@@ -18,13 +18,21 @@
         <aside class="params-panel" id="paramsPanel">
             <div class="params-panel-header">
                 <h2>调节参数</h2>
-                <button
-                    type="button"
-                    class="params-reset"
-                    id="paramsReset"
-                    aria-label="恢复默认"
-                    data-tooltip="恢复默认"
-                ></button>
+                <div class="params-panel-actions">
+                    <button
+                        type="button"
+                        class="params-save"
+                        id="paramsSave"
+                        data-tooltip="保存到快捷预设"
+                    >保存</button>
+                    <button
+                        type="button"
+                        class="params-reset"
+                        id="paramsReset"
+                        aria-label="恢复默认"
+                        data-tooltip="恢复默认"
+                    ></button>
+                </div>
             </div>
             <div id="paramsForm"></div>
         </aside>
