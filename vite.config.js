@@ -7,7 +7,7 @@ export default defineConfig(({ command }) => ({
   // dev 时以 demo/ 为站点根，访问 http://localhost:5173/ 即可打开演示页
   root: command === 'serve' ? 'demo' : process.cwd(),
   server: {
-    open: true
+    open: '/index.dev.html'
   },
   build: {
     outDir: 'dist',

@@ -13,6 +13,9 @@ export default defineConfig({
     base: DEMO_BASE,
     build: {
         outDir: 'dist',
-        emptyOutDir: true
+        emptyOutDir: true,
+        rollupOptions: {
+            input: resolve(rootDir, 'demo/index.dev.html')
+        }
     }
 });
