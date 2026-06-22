@@ -66,7 +66,9 @@
 
 **注意**：若用 `file://` 直接打开 HTML，浏览器可能拦截 ES 模块；请用 `npm run dev` 或任意静态服务器访问。
 
-### 方式二：Vue 3
+### 方式二：Vue
+
+**Vue 3**（需 `vue@>=3.4`）：
 
 ```vue
 <template>
@@ -96,6 +98,53 @@ function onSelect(icon, index) {
 function onSlideEnd(index) {
   console.log('滑动结束:', index);
 }
+</script>
+
+<style scoped>
+.carousel-container {
+  width: min(100vw - 32px, 480px);
+  height: min(62vw, 300px);
+}
+</style>
+```
+
+**Vue 2**（需 `vue@>=2.6`，Options API）：
+
+```vue
+<template>
+  <BezierSlider
+    class="carousel-container"
+    :icons="icons"
+    :initial-index="0"
+    @select="onSelect"
+    @slide-end="onSlideEnd"
+  />
+</template>
+
+<script>
+import { BezierSlider } from 'bezier-slider/vue2';
+
+export default {
+  components: { BezierSlider },
+  data() {
+    return {
+      icons: [
+        { name: '首页', emoji: '🏠', color: '#8b5cf6' },
+        { name: '搜索', emoji: '🔍', color: '#ec4899' },
+        { name: '消息', emoji: '💬', color: '#06b6d4' },
+        { name: '设置', emoji: '⚙️', color: '#22c55e' }
+      ]
+    };
+  },
+  methods: {
+    onSelect(icon, index) {
+      console.log('选中:', icon.name, index);
+    },
+    onSlideEnd(index) {
+      console.log('滑动结束:', index);
+    }
+  }
+};
 </script>
 
 <style scoped>
