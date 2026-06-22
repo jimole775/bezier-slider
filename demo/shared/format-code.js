@@ -1,9 +1,49 @@
 import { ICONS } from './constants.js';
 import { buildSliderConfig } from './param-utils.js';
 
+function isIdentifierKey(key) {
+    return /^[A-Za-z_$][\w$]*$/.test(key);
+}
+
+function formatJsString(value) {
+    return `'${value
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t')}'`;
+}
+
+function formatJsValue(value, indent = 0) {
+    if (value === null) return 'null';
+    if (typeof value === 'boolean') return String(value);
+    if (typeof value === 'number') return String(value);
+    if (typeof value === 'string') return formatJsString(value);
+
+    const pad = ' '.repeat(indent);
+    const innerPad = ' '.repeat(indent + 2);
+
+    if (Array.isArray(value)) {
+        if (value.length === 0) return '[]';
+        const items = value.map((item) => `${innerPad}${formatJsValue(item, indent + 2)}`).join(',\n');
+        return `[\n${items}\n${pad}]`;
+    }
+
+    if (typeof value === 'object') {
+        const entries = Object.entries(value);
+        if (entries.length === 0) return '{}';
+        const lines = entries.map(([key, val]) => {
+            const keyStr = isIdentifierKey(key) ? key : formatJsString(key);
+            return `${innerPad}${keyStr}: ${formatJsValue(val, indent + 2)}`;
+        }).join(',\n');
+        return `{\n${lines}\n${pad}}`;
+    }
+
+    return formatJsString(String(value));
+}
+
 function formatObjectBlock(obj, lineIndent = 2) {
-    const pad = ' '.repeat(lineIndent);
-    return JSON.stringify(obj, null, 2).replace(/\n/g, `\n${pad}`);
+    return formatJsValue(obj, lineIndent);
 }
 
 function buildContainerSize(displaySize) {
@@ -56,7 +96,7 @@ ${indent}:rubberBandLimit="${cfg.rubberBandLimit}"
 ${indent}:rubberBandDuration="${cfg.rubberBandDuration}"
 ${indent}:fadeEnabled="${cfg.fadeEnabled}"
 ${indent}:centerGlowEnabled="${cfg.centerGlowEnabled}"
-${indent}:bezier='${formatObjectBlock(cfg.bezier, 2)}'`;
+${indent}:bezier="${formatObjectBlock(cfg.bezier, 2)}"`;
 }
 
 function buildContainerHtml(displaySize) {
