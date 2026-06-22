@@ -171,6 +171,8 @@ ${a}
   );
 }`}function bn(e,t={}){const i=Te(e),{displaySize:s}=t,{width:c,height:u}=De(s),a=dn(i);return`<script setup>
 import { BezierSlider } from 'bezier-slider/vue';
+// vue2 版本
+// import { BezierSlider } from 'bezier-slider/vue2';
 
 const icons = ${ue(we,2)};
 <\/script>
