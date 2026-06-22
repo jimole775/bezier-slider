@@ -128,6 +128,8 @@ export function formatVueCode(params, options = {}) {
 
     return `<script setup>
 import { BezierSlider } from 'bezier-slider/vue';
+// vue2 版本
+// import { BezierSlider } from 'bezier-slider/vue2';
 
 const icons = ${icons};
 </script>
