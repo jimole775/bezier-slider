@@ -78,12 +78,26 @@ const BezierSliderVue2 = {
             this.controller = mountNativeSliderWhenReady(container, this.$props, {
                 onSelect: (icon, index) => this.$emit('select', icon, index),
                 onSlideEnd: (index) => this.$emit('slide-end', index),
+                onDragStart: () => this.$emit('drag-start'),
+                onDragMove: (payload) => this.$emit('drag-move', payload),
                 onLayout: null,
                 renderTrack: this.resolveRenderTrack()
             });
         },
         slideTo(index, animate = true) {
             this.controller?.getInstance()?.slideTo(index, animate);
+        },
+        followSwiper(payload) {
+            this.controller?.getInstance()?.followSwiper(payload);
+        },
+        endExternalFollow(index) {
+            this.controller?.getInstance()?.endExternalFollow(index);
+        },
+        animateToIndex(index, duration, onComplete) {
+            this.controller?.getInstance()?.animateToIndex(index, duration, onComplete);
+        },
+        followIndexFloat(indexFloat) {
+            this.controller?.getInstance()?.followIndexFloat(indexFloat);
         },
         getCurrentIndex() {
             return this.controller?.getInstance()?.getCurrentIndex() ?? 0;

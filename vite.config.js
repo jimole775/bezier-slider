@@ -16,14 +16,20 @@ export default defineConfig(({ command }) => ({
         'bezier-slider': './src/index.js',
         'bezier-slider.vue': './src/vue-component.js',
         'bezier-slider.vue2': './src/vue2-component.js',
-        'bezier-slider.react': './src/react-component.js'
+        'bezier-slider.react': './src/react-component.js',
+        'bezier-slider.mp': './src/mp-component.js'
       },
       name: 'BezierSlider',
-      formats: ['es']
+      formats: ['es', 'cjs'],
+      fileName: (format, entryName) => {
+        const ext = format === 'es' ? 'mjs' : 'cjs';
+        return `${entryName}.${ext}`;
+      }
     },
     rollupOptions: {
       external: ['vue', 'react', 'react-dom', 'react/jsx-runtime'],
       output: {
+        exports: 'named',
         globals: {
           vue: 'Vue',
           react: 'React',

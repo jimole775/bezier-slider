@@ -45,7 +45,7 @@ const props = defineProps({
     rootStyle: [String, Object, Array]
 });
 
-const emit = defineEmits(['select', 'slideEnd']);
+const emit = defineEmits(['select', 'slideEnd', 'dragStart', 'dragMove']);
 
 const mountRef = ref(null);
 const controller = shallowRef(null);
@@ -72,6 +72,8 @@ function mountSlider() {
     controller.value = mountNativeSliderWhenReady(container, props, {
         onSelect: (icon, index) => emit('select', icon, index),
         onSlideEnd: (index) => emit('slideEnd', index),
+        onDragStart: () => emit('dragStart'),
+        onDragMove: (payload) => emit('dragMove', payload),
         onLayout: null,
         renderTrack: resolveRenderTrack()
     });
@@ -90,6 +92,22 @@ function slideTo(index, animate = true) {
     controller.value?.getInstance()?.slideTo(index, animate);
 }
 
+function followSwiper(payload) {
+    controller.value?.getInstance()?.followSwiper(payload);
+}
+
+function endExternalFollow(index) {
+    controller.value?.getInstance()?.endExternalFollow(index);
+}
+
+function animateToIndex(index, duration, onComplete) {
+    controller.value?.getInstance()?.animateToIndex(index, duration, onComplete);
+}
+
+function followIndexFloat(indexFloat) {
+    controller.value?.getInstance()?.followIndexFloat(indexFloat);
+}
+
 function getCurrentIndex() {
     return controller.value?.getInstance()?.getCurrentIndex() ?? 0;
 }
@@ -104,6 +122,10 @@ function getInstance() {
 
 defineExpose({
     slideTo,
+    followSwiper,
+    endExternalFollow,
+    animateToIndex,
+    followIndexFloat,
     getCurrentIndex,
     getLayoutState,
     getInstance

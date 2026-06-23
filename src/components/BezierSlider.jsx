@@ -47,6 +47,8 @@ const BezierSlider = forwardRef(function BezierSlider(props, ref) {
         controllerRef.current = mountNativeSliderWhenReady(container, current, {
             onSelect: (...args) => propsRef.current.onSelect?.(...args),
             onSlideEnd: (...args) => propsRef.current.onSlideEnd?.(...args),
+            onDragStart: () => propsRef.current.onDragStart?.(),
+            onDragMove: (payload) => propsRef.current.onDragMove?.(payload),
             onLayout: (layout) => propsRef.current.onLayout?.(layout),
             renderTrack: current.renderTrack
         });
@@ -60,6 +62,18 @@ const BezierSlider = forwardRef(function BezierSlider(props, ref) {
     useImperativeHandle(ref, () => ({
         slideTo(index, animate = true) {
             controllerRef.current?.getInstance()?.slideTo(index, animate);
+        },
+        followSwiper(payload) {
+            controllerRef.current?.getInstance()?.followSwiper(payload);
+        },
+        endExternalFollow(index) {
+            controllerRef.current?.getInstance()?.endExternalFollow(index);
+        },
+        animateToIndex(index, duration, onComplete) {
+            controllerRef.current?.getInstance()?.animateToIndex(index, duration, onComplete);
+        },
+        followIndexFloat(indexFloat) {
+            controllerRef.current?.getInstance()?.followIndexFloat(indexFloat);
         },
         getCurrentIndex() {
             return controllerRef.current?.getInstance()?.getCurrentIndex() ?? 0;

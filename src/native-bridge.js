@@ -37,13 +37,15 @@ export function getConfigKey(source) {
  * 创建 native 实例，回调由 hooks 注入（便于框架封装读取最新 props / emit）
  */
 export function createNativeSlider(container, source, hooks = {}) {
-    const { onSelect, onSlideEnd, onLayout, renderTrack } = hooks;
+    const { onSelect, onSlideEnd, onDragStart, onDragMove, onLayout, renderTrack } = hooks;
 
     return new NativeBezierSlider({
         container,
         ...pickNativeOptions(source),
         onSelect,
         onSlideEnd,
+        onDragStart,
+        onDragMove,
         onLayout: (layout) => {
             if (typeof renderTrack === 'function') {
                 renderTrack(container, layout);
