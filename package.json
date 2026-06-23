@@ -1,26 +1,47 @@
 {
   "name": "bezier-slider",
-  "version": "1.0.8",
-  "description": "二次贝塞尔弧形图标滑块组件，支持原生 JavaScript、Vue 2、Vue 3 和 React",
-  "main": "dist/bezier-slider.mjs",
+  "version": "1.1.0",
+  "description": "二次贝塞尔弧形图标滑块组件，支持原生 JavaScript、Vue 2、Vue 3、React 与 uni-app 小程序",
+  "main": "dist/bezier-slider.cjs",
   "module": "dist/bezier-slider.mjs",
   "exports": {
     ".": {
-      "import": "./dist/bezier-slider.mjs"
+      "import": "./dist/bezier-slider.mjs",
+      "require": "./dist/bezier-slider.cjs",
+      "default": "./dist/bezier-slider.cjs"
     },
     "./vue": {
-      "import": "./dist/bezier-slider.vue.mjs"
+      "import": "./dist/bezier-slider.vue.mjs",
+      "require": "./dist/bezier-slider.vue.cjs",
+      "default": "./vue.js"
     },
     "./vue2": {
-      "import": "./dist/bezier-slider.vue2.mjs"
+      "import": "./dist/bezier-slider.vue2.mjs",
+      "require": "./dist/bezier-slider.vue2.cjs",
+      "default": "./vue2.js"
     },
     "./react": {
-      "import": "./dist/bezier-slider.react.mjs"
+      "import": "./dist/bezier-slider.react.mjs",
+      "require": "./dist/bezier-slider.react.cjs",
+      "default": "./react.js"
+    },
+    "./mp": {
+      "import": "./dist/bezier-slider.mp.mjs",
+      "require": "./dist/bezier-slider.mp.cjs",
+      "default": "./mp.js"
     },
     "./dist/*": "./dist/*"
   },
+  "files": [
+    "dist",
+    "vue.js",
+    "vue2.js",
+    "react.js",
+    "mp.js"
+  ],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-entry-shims.mjs",
+    "prepublishOnly": "npm run build",
     "build:demo": "node scripts/publish-demo-pages.mjs",
     "preview:demo": "vite preview --config vite.demo.config.js",
     "dev": "vite",
@@ -61,6 +82,9 @@
     "vue2",
     "vue3",
     "react",
+    "uni-app",
+    "miniprogram",
+    "wechat",
     "icon-slider"
   ],
   "author": "",
