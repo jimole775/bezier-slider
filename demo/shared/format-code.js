@@ -99,6 +99,26 @@ ${indent}:centerGlowEnabled="${cfg.centerGlowEnabled}"
 ${indent}:bezier="${formatObjectBlock(cfg.bezier, 2)}"`;
 }
 
+function buildMpProps(cfg, indent = '      ') {
+    return `${indent}:initial-index="${cfg.initialIndex}"
+${indent}:t-step="${cfg.tStep}"
+${indent}:track-scale="${cfg.trackScale}"
+${indent}:visible-icon-count="${cfg.visibleIconCount}"
+${indent}:center-t="${cfg.centerT}"
+${indent}:sensitivity="${cfg.sensitivity}"
+${indent}:snap-duration="${cfg.snapDuration}"
+${indent}:rubber-band-limit="${cfg.rubberBandLimit}"
+${indent}:rubber-band-duration="${cfg.rubberBandDuration}"
+${indent}:fade-enabled="${cfg.fadeEnabled}"
+${indent}:center-glow-enabled="${cfg.centerGlowEnabled}"
+${indent}:show-track="true"
+${indent}:bezier="${formatObjectBlock(cfg.bezier, 2)}"`;
+}
+
+function pxToRpx(px) {
+    return Math.round(px * 2);
+}
+
 function buildContainerHtml(displaySize) {
     const { width, height } = buildContainerSize(displaySize);
     return `<div id="slider" style="position:relative;width:${width}px;height:${height}px;overflow:visible"></div>`;
@@ -186,8 +206,57 @@ ${sliderOptions}
 </template>`;
 }
 
+export function formatMpCode(params, options = {}) {
+    const cfg = buildSliderConfig(params);
+    const hint = options.displaySize ?? {};
+    const widthRpx = pxToRpx(hint.trackWidth ?? hint.width ?? 480);
+    const heightRpx = pxToRpx(hint.trackHeight ?? hint.height ?? 300);
+    const sliderOptions = buildMpProps(cfg);
+    const icons = formatObjectBlock(ICONS, 6);
+
+    return `<template>
+  <view class="slider-wrap">
+    <BezierSlider
+      :icons="icons"
+${sliderOptions}
+      @select="onSelect"
+      @slide-end="onSlideEnd"
+    />
+  </view>
+</template>
+
+<script>
+import BezierSlider from 'bezier-slider/mp';
+
+export default {
+  components: { BezierSlider },
+  data() {
+    return {
+      icons: ${icons}
+    };
+  },
+  methods: {
+    onSelect(icon, index) {
+      console.log('选中:', icon.name, index);
+    },
+    onSlideEnd(index) {
+      console.log('停留:', index);
+    }
+  }
+};
+</script>
+
+<style>
+.slider-wrap {
+  width: ${widthRpx}rpx;
+  height: ${heightRpx}rpx;
+}
+</style>`;
+}
+
 export const CODE_FORMATTERS = {
     native: formatNativeCode,
     react: formatReactCode,
-    vue: formatVueCode
+    vue: formatVueCode,
+    mp: formatMpCode
 };

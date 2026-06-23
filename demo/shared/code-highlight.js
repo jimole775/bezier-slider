@@ -10,7 +10,8 @@ hljs.registerLanguage('html', xml);
 const CODE_TAB_LANGUAGES = {
     native: 'html',
     react: 'javascript',
-    vue: 'xml'
+    vue: 'xml',
+    mp: 'xml'
 };
 
 function ensureCodeElement(container) {
