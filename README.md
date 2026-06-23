@@ -24,6 +24,54 @@
 
 ---
 
+## JS 环境与入口支持
+
+本包按**运行环境**拆成多条入口。DOM 版（默认 / Vue / React）与小程序版（`mp`）实现不同，**不可混用**：小程序里请用 `bezier-slider/mp`，浏览器 / uni-app H5 请用 DOM 版。
+
+### 包入口一览
+
+| 导入路径 | 构建产物 | 根目录 shim | 实现方式 | 适用场景 |
+|----------|----------|-------------|----------|----------|
+| `bezier-slider` | `dist/bezier-slider.{mjs,cjs}` | — | 原生 `BezierSlider` class + DOM | 浏览器、`<script type="module">` |
+| `bezier-slider/vue` | `dist/bezier-slider.vue.{mjs,cjs}` | `vue.js` | Vue 3 薄包装 → native 核心 | Vue 3 Web / uni-app H5 |
+| `bezier-slider/vue2` | `dist/bezier-slider.vue2.{mjs,cjs}` | `vue2.js` | Vue 2 薄包装 → native 核心 | Vue 2 Web / uni-app H5 |
+| `bezier-slider/react` | `dist/bezier-slider.react.{mjs,cjs}` | `react.js` | React 18+ 薄包装 → native 核心 | React Web |
+| `bezier-slider/mp` | `dist/bezier-slider.mp.{mjs,cjs}` | `mp.js` | Vue 2 组件 + `BezierSliderEngine` + canvas | **uni-app 小程序** |
+
+- **ESM**：`import … from 'bezier-slider/…'` → 解析为 `dist/*.mjs`（Vite / Webpack 5+ 等）
+- **CJS**：`require('bezier-slider/…')` → 解析为 `dist/*.cjs`
+- **旧打包器**：Webpack 4、部分 uni-app 构建链不识别 `package.json` 的 `exports`，请改用根目录 `vue.js` / `vue2.js` / `react.js` / `mp.js`（见 [uni-app 兼容说明](#uni-app--vue-cliwebpack-4-兼容说明)）
+
+### 运行环境支持
+
+| 环境 | 支持 | 推荐入口 | 备注 |
+|------|:----:|----------|------|
+| 现代浏览器（ES Module） | ✅ | `bezier-slider` | 需静态服务器，勿用 `file://` |
+| Vite / Webpack 5+ / Rollup | ✅ | 按框架选对应 subpath | 识别 `exports` 字段 |
+| Webpack 4 / 旧 uni-app 构建 | ✅ | 根目录 `*.js` shim | 需 `transpileDependencies: ['bezier-slider']` |
+| Vue 2 / Vue 3（Web） | ✅ | `bezier-slider/vue2` 或 `/vue` | peer：`vue@>=2.6` 或 `>=3.4` |
+| React 18+（Web） | ✅ | `bezier-slider/react` | peer：`react`、`react-dom` |
+| uni-app **H5** | ✅ | `bezier-slider/vue2` 或 `/vue` | 走浏览器 DOM，**不要用 `/mp`** |
+| uni-app **微信小程序** 等小程序 | ✅ | `bezier-slider/mp` | canvas 滑轨 + 声明式图标，无 DOM |
+| uni-app **App**（vue 页面） | ⚠️ | `bezier-slider/mp` | 非 H5 时走 canvas 分支，未全面验证 |
+| Node.js / SSR | ❌ | — | DOM 版无 `document`；`mp` 依赖 `uni` API |
+| 微信原生（非 uni-app） | ❌ | — | 需自行移植算法，暂无原生 WXML 组件 |
+| React Native | ❌ | — | 暂无适配 |
+
+### DOM 版 vs 小程序版
+
+| 对比项 | DOM 版（`/`、`/vue`、`/vue2`、`/react`） | 小程序版（`/mp`） |
+|--------|------------------------------------------|-------------------|
+| 渲染 | `document.createElement`、SVG 滑轨 | `<view>` / `<image>` / `<text>` + canvas 滑轨 |
+| 交互 | 鼠标 + 触摸（绑定在 DOM 上） | `@touchstart` / `@touchmove` / `@touchend` |
+| 滑轨 | `renderDefaultTrack`（SVG） | 内置 canvas 绘制，`:show-track="false"` 可关 |
+| 图标 | emoji、图片、SVG path、font-icon 等 | 优先 **emoji / 图片 / 文字**；fontIcon、svgPath 支持有限 |
+| 核心 | `bezier-slider.native.js` | 共享 `BezierSliderEngine`（`src/core/`） |
+
+小程序版 Props / Events 与 Vue2 版基本一致（`icons`、`initial-index`、`@select`、`@slide-end` 等），用法见 [方式二 · 小程序端](#方式二vue) 示例。
+
+---
+
 ## 快速开始
 
 ### 方式一：原生 JavaScript
@@ -158,6 +206,84 @@ export default {
 默认使用 `renderDefaultTrack` 绘制滑轨；传 `:render-track="null"` 可关闭，或传入自定义函数。演示页右侧代码面板可切换 Vue 代码输出。
 
 Vue 封装为**薄包装**，内部复用 native `BezierSlider` 核心，与 React 版一致。
+
+#### uni-app / Vue CLI（Webpack 4）兼容说明
+
+入口与 shim 对照见上方 [JS 环境与入口支持](#js-环境与入口支持)。旧版 Webpack **不识别** `package.json` 的 `exports` 字段，因此根目录提供物理入口文件：
+
+| 导入路径 | 实际文件 | 适用场景 |
+|----------|----------|----------|
+| `bezier-slider/vue2` | `vue2.js` → `dist/bezier-slider.vue2.cjs` | H5 / Web |
+| `bezier-slider/vue` | `vue.js` → `dist/bezier-slider.vue.cjs` | Vue 3 H5 |
+| `bezier-slider/react` | `react.js` → `dist/bezier-slider.react.cjs` | React |
+| `bezier-slider/mp` | `mp.js` → `dist/bezier-slider.mp.cjs` | **uni-app 小程序** |
+
+**H5 端**（依赖浏览器 DOM）：
+
+```js
+import { BezierSlider } from 'bezier-slider/vue2';
+
+export default {
+  components: { BezierSlider }
+};
+```
+
+**小程序端**（声明式模板 + canvas 滑轨，无 DOM 依赖）：
+
+```vue
+<template>
+  <view class="slider-wrap">
+    <BezierSlider
+      :icons="icons"
+      :initial-index="0"
+      @select="onSelect"
+      @slide-end="onSlideEnd"
+    />
+  </view>
+</template>
+
+<script>
+import BezierSlider from 'bezier-slider/mp';
+
+export default {
+  components: { BezierSlider },
+  data() {
+    return {
+      icons: [
+        { name: '首页', emoji: '🏠', color: '#8b5cf6' },
+        { name: '搜索', emoji: '🔍', color: '#ec4899' }
+      ]
+    };
+  },
+  methods: {
+    onSelect(icon, index) { console.log(icon.name, index); },
+    onSlideEnd(index) { console.log('停留:', index); }
+  }
+};
+</script>
+
+<style>
+.slider-wrap {
+  width: 690rpx;
+  height: 320rpx;
+}
+</style>
+```
+
+若安装后仍报语法相关错误，在 `vue.config.js` 中把本包加入转译白名单：
+
+```js
+module.exports = {
+  transpileDependencies: ['bezier-slider']
+};
+```
+
+小程序版说明（完整环境矩阵见 [JS 环境与入口支持](#js-环境与入口支持)）：
+
+- Props / Events 与 Vue2 版基本一致（`icons`、`initial-index`、`@select`、`@slide-end` 等）
+- 默认用 canvas 绘制滑轨，传 `:show-track="false"` 可关闭，改用容器背景图
+- 优先支持 **emoji / 图片 / 文字** 图标；`fontIcon`、`svgPath` 在部分小程序端支持有限
+- 目前面向 **微信等 uni-app 小程序**；H5 请继续用 `bezier-slider/vue2`
 
 ---
 
