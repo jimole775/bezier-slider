@@ -8,6 +8,8 @@ const demoRoot = join(rootDir, 'demo');
 const distDir = join(demoRoot, 'dist');
 const publishDir = join(demoRoot, 'publish');
 const deployAssetsDir = join(demoRoot, 'assets');
+const docsRoot = join(rootDir, 'docs');
+const docsAssetsDir = join(docsRoot, 'assets');
 const builtHtmlPath = join(distDir, 'index.dev.html');
 
 function prepareDeployHtml(html) {
@@ -74,12 +76,18 @@ writeFileSync(join(publishDir, 'index.html'), publishHtml, 'utf8');
 const demoHtml = syncDeployOutput(builtAssetsDir, deployAssetsDir, deployHtml);
 writeFileSync(join(demoRoot, 'index.html'), demoHtml, 'utf8');
 
+const docsHtml = demoHtml.replace(/\s*<link rel="stylesheet" href="\.\/shared\/demo-html\.css" \/>/g, '');
+const docsHtmlFinal = syncDeployOutput(builtAssetsDir, docsAssetsDir, docsHtml);
+writeFileSync(join(docsRoot, 'index.html'), docsHtmlFinal, 'utf8');
+
 const assetFiles = listAssetFiles(deployAssetsDir);
 
 console.log('');
-console.log('GitHub Pages 发布包已同步到 demo/');
+console.log('GitHub Pages 发布包已同步到 demo/ 与 docs/');
 console.log(`  demo/index.html`);
 console.log(`  demo/assets/ (${assetFiles.length} 个文件)`);
+console.log(`  docs/index.html`);
+console.log(`  docs/assets/ (${assetFiles.length} 个文件)`);
 console.log('');
 console.log('本地预览: npm run preview:demo');
 console.log('提交并 push 后访问: https://jimole775.github.io/bezier-slider/demo/');

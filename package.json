@@ -1,31 +1,37 @@
 {
   "name": "bezier-slider",
-  "version": "1.1.0",
-  "description": "二次贝塞尔弧形图标滑块组件，支持原生 JavaScript、Vue 2、Vue 3、React 与 uni-app 小程序",
+  "version": "1.2.0",
+  "description": "二次贝塞尔弧形图标滑块组件，支持 HTML、Vue 2、Vue 3、React 与 uni-app 小程序",
   "main": "dist/bezier-slider.cjs",
   "module": "dist/bezier-slider.mjs",
+  "types": "./types/bezier-slider.d.ts",
   "exports": {
     ".": {
+      "types": "./types/bezier-slider.d.ts",
       "import": "./dist/bezier-slider.mjs",
       "require": "./dist/bezier-slider.cjs",
       "default": "./dist/bezier-slider.cjs"
     },
     "./vue": {
+      "types": "./types/vue.d.ts",
       "import": "./dist/bezier-slider.vue.mjs",
       "require": "./dist/bezier-slider.vue.cjs",
       "default": "./vue.js"
     },
     "./vue2": {
+      "types": "./types/vue2.d.ts",
       "import": "./dist/bezier-slider.vue2.mjs",
       "require": "./dist/bezier-slider.vue2.cjs",
       "default": "./vue2.js"
     },
     "./react": {
+      "types": "./types/react.d.ts",
       "import": "./dist/bezier-slider.react.mjs",
       "require": "./dist/bezier-slider.react.cjs",
       "default": "./react.js"
     },
     "./mp": {
+      "types": "./types/mp.d.ts",
       "import": "./dist/bezier-slider.mp.mjs",
       "require": "./dist/bezier-slider.mp.cjs",
       "default": "./mp.js"
@@ -34,6 +40,7 @@
   },
   "files": [
     "dist",
+    "types",
     "vue.js",
     "vue2.js",
     "react.js",
@@ -46,6 +53,7 @@
     "preview:demo": "vite preview --config vite.demo.config.js",
     "dev": "vite",
     "preview": "vite preview",
+    "typecheck": "tsc -p tsconfig.types.json",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "devDependencies": {
@@ -54,6 +62,7 @@
     "highlight.js": "^11.11.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "typescript": "^5.4.5",
     "vite": "^4.5.2",
     "vue": "^3.4.0"
   },

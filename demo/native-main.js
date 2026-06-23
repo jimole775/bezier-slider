@@ -15,7 +15,7 @@ import {
     savePresetSnapshot
 } from './shared/saved-presets.js';
 import { bindCopyButton, bindResetButton } from './shared/clipboard.js';
-import { CODE_FORMATTERS } from './shared/format-code.js';
+import { getCodeFormatter } from './shared/format-code.js';
 import { getCodeTabLanguage, getPlainCodeText, renderHighlightedCode } from './shared/code-highlight.js';
 import {
     applyComposeLayout,
@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const legendExtra = document.getElementById('legendExtra');
     const legendCenterT = document.getElementById('legendCenterT');
     const codeTabButtons = document.querySelectorAll('#codeTabs button');
+    const codeLangToggle = document.getElementById('codeLangToggle');
     const paramsForm = document.getElementById('paramsForm');
     const codeContent = document.getElementById('codeContent');
     const codeCopyBtn = document.getElementById('codeCopyBtn');
@@ -58,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const geometryPresetBar = document.getElementById('geometryPresetBar');
 
     let slider = null;
-    let currentCodeTab = 'native';
+    let currentCodeTab = 'html';
+    let currentCodeLang = 'js';
     let params = createDefaultParams(BezierSlider.DEFAULTS);
     let rebuildTimer = null;
     let customBgUrl = null;
@@ -114,9 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateParamsPreview() {
-        const formatter = CODE_FORMATTERS[currentCodeTab] ?? CODE_FORMATTERS.native;
+        const formatter = getCodeFormatter(currentCodeTab, currentCodeLang);
         const source = formatter(params, getCodePreviewOptions());
-        renderHighlightedCode(codeContent, source, getCodeTabLanguage(currentCodeTab));
+        renderHighlightedCode(codeContent, source, getCodeTabLanguage(currentCodeTab, currentCodeLang));
         legendCenterT.textContent = `centerT = ${params.centerT}`;
     }
 
@@ -125,6 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
         codeTabButtons.forEach((btn) => {
             btn.classList.toggle('active', btn.dataset.code === tab);
         });
+        updateParamsPreview();
+    }
+
+    function setCodeLang(lang) {
+        currentCodeLang = lang;
+        if (codeLangToggle) {
+            codeLangToggle.checked = lang === 'ts';
+        }
         updateParamsPreview();
     }
 
@@ -294,6 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     codeTabButtons.forEach((btn) => {
         btn.addEventListener('click', () => setCodeTab(btn.dataset.code));
+    });
+
+    codeLangToggle?.addEventListener('change', () => {
+        setCodeLang(codeLangToggle.checked ? 'ts' : 'js');
     });
 
     bgUpload.addEventListener('change', async () => {

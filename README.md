@@ -2,7 +2,7 @@
 
 基于**二次贝塞尔曲线**的弧形图标滑块组件。图标沿平滑弧线排列，支持拖动、吸附、边界回弹，以及近大远小的视觉反馈。
 
-**支持平台**：现代浏览器（原生 JS / Vue 2 / Vue 3 / React）、**uni-app 小程序**（微信等，canvas 滑轨）。
+**支持平台**：现代浏览器（HTML + JavaScript / Vue 2 / Vue 3 / React）、**uni-app 小程序**（微信等，canvas 滑轨）。
 
 [demo](https://jimole775.github.io/bezier-slider/demo)（Web 演示，含参数调节与代码输出）
 
@@ -12,9 +12,9 @@
 
 - [功能介绍](#功能介绍)
 - [平台与入口](#平台与入口)
-- [快速开始](#快速开始)（[原生 JS](#方式一原生-javascript) · [Vue](#方式二vue) · [React](#方式三react) · [小程序](#方式四uni-app-小程序)）
-- [使用样例](#使用样例)（icons、bezier、回调等，以 DOM 版为主）
-- [API 参考](#api-参考)（[原生](#原生-bezier-slider) · [Vue](#vue-组件) · [React](#react-组件) · [小程序](#小程序组件)）
+- [快速开始](#快速开始)（[HTML](#方式一html--javascript) · [Vue](#方式二vue) · [React](#方式三react) · [小程序](#方式四uni-app-小程序) · [TypeScript](#typescript)）
+- [使用样例](#使用样例)（icons、bezier、回调等，以 HTML / DOM 版为主）
+- [API 参考](#api-参考)（[HTML / DOM](#html--dom-版-bezierslider) · [Vue](#vue-组件) · [React](#react-组件) · [小程序](#小程序组件)）
 - [样式说明](#样式说明)
 
 ---
@@ -47,10 +47,10 @@
 
 | 导入路径 | 构建产物 | 根目录 shim | 实现方式 | 适用场景 |
 |----------|----------|-------------|----------|----------|
-| `bezier-slider` | `dist/bezier-slider.{mjs,cjs}` | — | 原生 `BezierSlider` class + DOM | 浏览器、`<script type="module">` |
-| `bezier-slider/vue` | `dist/bezier-slider.vue.{mjs,cjs}` | `vue.js` | Vue 3 薄包装 → native 核心 | Vue 3 Web / uni-app H5 |
-| `bezier-slider/vue2` | `dist/bezier-slider.vue2.{mjs,cjs}` | `vue2.js` | Vue 2 薄包装 → native 核心 | Vue 2 Web / uni-app H5 |
-| `bezier-slider/react` | `dist/bezier-slider.react.{mjs,cjs}` | `react.js` | React 18+ 薄包装 → native 核心 | React Web |
+| `bezier-slider` | `dist/bezier-slider.{mjs,cjs}` | — | `BezierSlider` class + DOM（HTML 直接使用） | 浏览器、`<script type="module">` |
+| `bezier-slider/vue` | `dist/bezier-slider.vue.{mjs,cjs}` | `vue.js` | Vue 3 薄包装 → DOM 核心 | Vue 3 Web / uni-app H5 |
+| `bezier-slider/vue2` | `dist/bezier-slider.vue2.{mjs,cjs}` | `vue2.js` | Vue 2 薄包装 → DOM 核心 | Vue 2 Web / uni-app H5 |
+| `bezier-slider/react` | `dist/bezier-slider.react.{mjs,cjs}` | `react.js` | React 18+ 薄包装 → DOM 核心 | React Web |
 | `bezier-slider/mp` | `dist/bezier-slider.mp.{mjs,cjs}` | `mp.js` | Vue 2 组件 + `BezierSliderEngine` + canvas | **uni-app 小程序** |
 
 - **ESM**：`import … from 'bezier-slider/…'` → 解析为 `dist/*.mjs`（Vite / Webpack 5+ 等）
@@ -68,6 +68,7 @@
 | React 18+（Web） | ✅ | `bezier-slider/react` | peer：`react`、`react-dom` |
 | uni-app **H5** | ✅ | `bezier-slider/vue2` 或 `/vue` | 走浏览器 DOM，**不要用 `/mp`** |
 | uni-app **微信小程序** 等小程序 | ✅ | `bezier-slider/mp` | canvas 滑轨 + 声明式图标，无 DOM |
+| **TypeScript 项目** | ✅ | 同上各入口 | 包内自带 `types/`，无需 `@types/bezier-slider` |
 | uni-app **App**（vue 页面） | ⚠️ | `bezier-slider/mp` | 非 H5 时走 canvas 分支，未全面验证 |
 | Node.js / SSR | ❌ | — | DOM 版无 `document`；`mp` 依赖 `uni` API |
 | 微信原生（非 uni-app） | ❌ | — | 需自行移植算法，暂无原生 WXML 组件 |
@@ -104,7 +105,7 @@ src/
 
 ## 快速开始
 
-### 方式一：原生 JavaScript
+### 方式一：HTML + JavaScript
 
 先执行 `npm run build` 生成 `dist/`，或通过 `npm install bezier-slider` 安装包。
 
@@ -235,7 +236,7 @@ export default {
 
 默认使用 `renderDefaultTrack` 绘制滑轨；传 `:render-track="null"` 可关闭，或传入自定义函数。演示页右侧代码面板可切换 Vue 代码输出。
 
-Vue 封装为**薄包装**，内部复用 native `BezierSlider` 核心，与 React 版一致。
+Vue 封装为**薄包装**，内部复用 DOM 版 `BezierSlider` 核心，与 React 版一致。
 
 #### uni-app H5 / Webpack 4 兼容
 
@@ -302,7 +303,7 @@ sliderRef.current?.getCurrentIndex();
 
 演示页右侧代码面板可切换 React 代码输出。
 
-React 封装为**薄包装**，内部复用 native `BezierSlider` 核心，逻辑与原生版一致。
+React 封装为**薄包装**，内部复用 DOM 版 `BezierSlider` 核心，逻辑与 HTML 入口一致。
 
 ---
 
@@ -390,6 +391,36 @@ export default {
 
 ---
 
+### TypeScript
+
+包内自带类型声明（`types/` 目录），**库源码仍为 JavaScript**，使用方在 TS 项目中可直接获得类型提示，无需安装 `@types/bezier-slider`。
+
+| 导入路径 | 类型声明文件 |
+|----------|--------------|
+| `bezier-slider` | `types/bezier-slider.d.ts` |
+| `bezier-slider/vue` | `types/vue.d.ts` |
+| `bezier-slider/vue2` | `types/vue2.d.ts` |
+| `bezier-slider/react` | `types/react.d.ts` |
+| `bezier-slider/mp` | `types/mp.d.ts` |
+
+共享类型（`BezierSliderOptions`、`SliderIconInput`、`BezierConfig`、`LayoutState` 等）从各入口 re-export，通常写：
+
+```ts
+import BezierSlider, { renderDefaultTrack } from 'bezier-slider';
+import type { BezierSliderOptions, LayoutState, NormalizedIcon } from 'bezier-slider';
+
+import { BezierSlider as VueSlider } from 'bezier-slider/vue';
+import BezierSliderReact from 'bezier-slider/react';
+import BezierSliderMp from 'bezier-slider/mp';
+```
+
+`package.json` 的 `exports` 已为每个 subpath 配置 `"types"` 字段，Vite、Webpack 5+、`tsc` 会自动解析。
+
+**Vue 2 + TS**：若模板里用组件，请在项目中配置 `shims-vue.d.ts`（与使用任何 `.vue` 组件相同）。  
+**uni-app + TS**：小程序入口同样走 `bezier-slider/mp`；必要时在 `tsconfig.json` 中加入 `"types": ["@dcloudio/types"]` 等 uni 类型。
+
+---
+
 ### 开发
 
 ```bash
@@ -397,7 +428,7 @@ npm install
 npm run dev
 ```
 
-启动后访问 **http://127.0.0.1:5173/index.dev.html** 打开演示页。右侧代码面板支持切换 **原生 JS / React / Vue / 小程序** 代码输出（Web 版）。
+启动后访问 **http://127.0.0.1:5173/index.dev.html** 打开演示页。右侧代码面板支持切换 **HTML / React / Vue / 小程序**，以及 **JS / TS** 代码输出。
 
 GitHub Pages 演示构建：
 
@@ -425,7 +456,7 @@ npm link bezier-slider
 
 ## 使用样例
 
-以下示例以 **DOM 版**（`bezier-slider` / Vue / React）为主。小程序版通过组件 Props 传入相同配置项（如 `:bezier`、`:t-step`），详见 [小程序组件](#小程序组件)。
+以下示例以 **HTML / DOM 版**（`bezier-slider` / Vue / React）为主。小程序版通过组件 Props 传入相同配置项（如 `:bezier`、`:t-step`），详见 [小程序组件](#小程序组件)。
 
 ### 1. 自定义 icons（数量不限）
 
@@ -710,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ## API 参考
 
-### 原生 BezierSlider
+### HTML / DOM 版 BezierSlider
 
 #### 实例方法
 
@@ -771,7 +802,7 @@ console.log(BezierSlider.DEFAULTS);
 
 ### Vue 组件
 
-与 native 配置项一致；默认调用 `renderDefaultTrack` 绘制滑轨。
+与 HTML / DOM 版配置项一致；默认调用 `renderDefaultTrack` 绘制滑轨。
 
 #### Props
 
@@ -779,7 +810,7 @@ console.log(BezierSlider.DEFAULTS);
 |------|------|--------|------|
 | `icons` | Array | `[...]` | 图标列表 |
 | `initialIndex` | Number | `0` | 初始化停在中心的图标下标 |
-| `tStep` / `visibleIconCount` / `centerT` / `bezier` 等 | — | 同 native | 见配置项一览 |
+| `tStep` / `visibleIconCount` / `centerT` / `bezier` 等 | — | 同 HTML / DOM 版 | 见配置项一览 |
 | `renderTrack` | Function \| null | `renderDefaultTrack` | 滑轨绘制；`null` 关闭 |
 | `rootClass` / `rootStyle` | — | — | 外层容器样式 |
 
@@ -797,11 +828,11 @@ console.log(BezierSlider.DEFAULTS);
 | `slideTo(index, animate?)` | 滑动到指定下标 |
 | `getCurrentIndex()` | 当前选中下标 |
 | `getLayoutState()` | 当前布局几何 |
-| `getInstance()` | native `BezierSlider` 实例 |
+| `getInstance()` | DOM 版 `BezierSlider` 实例 |
 
 ### React 组件
 
-与 native 配置项一致，通过 props 传入；滑轨使用 `renderTrack`（等价于 native 的 `onLayout` + `renderDefaultTrack`）。
+与 HTML / DOM 版配置项一致，通过 props 传入；滑轨使用 `renderTrack`（等价于默认入口的 `onLayout` + `renderDefaultTrack`）。
 
 #### Props
 
@@ -809,7 +840,7 @@ console.log(BezierSlider.DEFAULTS);
 |------|------|------|
 | `icons` | Array | 图标列表 |
 | `initialIndex` | number | 初始化停在中心的图标下标，默认 `0` |
-| `tStep` / `visibleIconCount` / `centerT` / `bezier` 等 | — | 同 native 配置项 |
+| `tStep` / `visibleIconCount` / `centerT` / `bezier` 等 | — | 同 HTML / DOM 版配置项 |
 | `renderTrack` | `(container, layout) => void` | 绘制滑轨，如 `renderDefaultTrack` |
 | `onLayout` | `(layout) => void` | 布局更新（在 `renderTrack` 之后触发） |
 | `onSelect` | `(icon, index) => void` | 选中回调 |
@@ -823,7 +854,7 @@ console.log(BezierSlider.DEFAULTS);
 | `slideTo(index, animate?)` | 滑动到指定下标 |
 | `getCurrentIndex()` | 当前选中下标 |
 | `getLayoutState()` | 当前布局几何 |
-| `getInstance()` | 获取 native `BezierSlider` 实例 |
+| `getInstance()` | 获取 DOM 版 `BezierSlider` 实例 |
 
 `icons`、`bezier` 等配置变更时会自动 destroy 并按新配置重建实例。
 

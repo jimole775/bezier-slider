@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>弧形图标滑块 - Demo</title>
     
-    
-  <script type="module" crossorigin src="./assets/index-add827bd.js"></script>
-  <link rel="stylesheet" href="./assets/index-73d3c955.css">
+    <link rel="stylesheet" href="./shared/demo-html.css" />
+  <script type="module" crossorigin src="./assets/index-00a9d405.js"></script>
+  <link rel="stylesheet" href="./assets/index-273004e3.css">
 </head>
-<body class="demo-native">
+<body class="demo-html">
     <h1 class="title">弧形图标滑块 Demo</h1>
 
     <p class="demo-desc" id="modeDesc">
@@ -71,15 +71,30 @@
         <aside class="code-panel" id="codePanel">
             <div class="code-panel-header">
                 <h2>输出代码</h2>
-                <button
-                    type="button"
-                    class="code-copy-btn"
-                    id="codeCopyBtn"
-                    data-tooltip="复制代码"
-                ></button>
+                <div class="code-panel-actions">
+                    <label class="code-lang-switch" title="切换 JS / TS">
+                        <input
+                            type="checkbox"
+                            id="codeLangToggle"
+                            class="code-lang-switch__input"
+                            aria-label="使用 TypeScript 输出"
+                        />
+                        <span class="code-lang-switch__track" aria-hidden="true">
+                            <span class="code-lang-switch__label">JS</span>
+                            <span class="code-lang-switch__label">TS</span>
+                            <span class="code-lang-switch__thumb"></span>
+                        </span>
+                    </label>
+                    <button
+                        type="button"
+                        class="code-copy-btn"
+                        id="codeCopyBtn"
+                        data-tooltip="复制代码"
+                    ></button>
+                </div>
             </div>
             <div class="code-tabs" id="codeTabs">
-                <button type="button" class="active" data-code="native">原生 JS</button>
+                <button type="button" class="active" data-code="html">HTML</button>
                 <button type="button" data-code="react">React</button>
                 <button type="button" data-code="vue">Vue</button>
                 <button type="button" data-code="mp">小程序</button>

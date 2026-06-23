@@ -1,15 +1,24 @@
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import 'highlight.js/styles/atom-one-dark.css';
 
 hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('typescript', typescript);
 hljs.registerLanguage('xml', xml);
 hljs.registerLanguage('html', xml);
 
 const CODE_TAB_LANGUAGES = {
-    native: 'html',
+    html: 'html',
     react: 'javascript',
+    vue: 'xml',
+    mp: 'xml'
+};
+
+const CODE_TAB_LANGUAGES_TS = {
+    html: 'typescript',
+    react: 'typescript',
     vue: 'xml',
     mp: 'xml'
 };
@@ -24,8 +33,9 @@ function ensureCodeElement(container) {
     return codeEl;
 }
 
-export function getCodeTabLanguage(tab) {
-    return CODE_TAB_LANGUAGES[tab] ?? 'javascript';
+export function getCodeTabLanguage(tab, lang = 'js') {
+    const map = lang === 'ts' ? CODE_TAB_LANGUAGES_TS : CODE_TAB_LANGUAGES;
+    return map[tab] ?? (lang === 'ts' ? 'typescript' : 'javascript');
 }
 
 export function renderHighlightedCode(container, source, language) {

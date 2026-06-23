@@ -128,7 +128,11 @@ function buildIconsBlock(indent = '') {
     return `${indent}const icons = ${formatObjectBlock(ICONS, indent.length + 2)};`;
 }
 
-export function formatNativeCode(params, options = {}) {
+function buildIconsBlockTs(indent = '') {
+    return `${indent}const icons: SliderIconInput[] = ${formatObjectBlock(ICONS, indent.length + 2)};`;
+}
+
+export function formatHtmlCode(params, options = {}) {
     const cfg = buildSliderConfig(params);
     const { displaySize } = options;
     const sliderOptions = buildSliderOptions(cfg);
@@ -254,9 +258,172 @@ export default {
 </style>`;
 }
 
+export function formatHtmlCodeTs(params, options = {}) {
+    const cfg = buildSliderConfig(params);
+    const { displaySize } = options;
+    const sliderOptions = buildSliderOptions(cfg);
+
+    return `${buildContainerHtml(displaySize)}
+
+// main.ts — 需配合 Vite 等构建工具
+import BezierSlider from 'bezier-slider';
+import type { NormalizedIcon, SliderIconInput } from 'bezier-slider';
+
+${buildIconsBlockTs()}
+
+const container = document.getElementById('slider')!;
+
+new BezierSlider({
+  container,
+  icons,
+${sliderOptions},
+  onSelect: (icon: NormalizedIcon, index: number) => {
+    console.log('选中:', icon.name, index);
+  },
+  onSlideEnd: (index: number) => {
+    console.log('停留:', index);
+  },
+  onLayout: () => {
+    // 滑轨由页面背景承载；layout.bezier 可用于对齐调试
+  }
+});`;
+}
+
+export function formatReactCodeTs(params, options = {}) {
+    const cfg = buildSliderConfig(params);
+    const { displaySize } = options;
+    const { width, height } = buildContainerSize(displaySize);
+    const sliderOptions = buildReactProps(cfg);
+    const icons = formatObjectBlock(ICONS, 6);
+
+    return `import BezierSlider from 'bezier-slider/react';
+import type { NormalizedIcon, SliderIconInput } from 'bezier-slider';
+
+const icons: SliderIconInput[] = ${icons};
+
+function handleSelect(icon: NormalizedIcon, index: number) {
+  console.log('选中:', icon.name, index);
+}
+
+function handleSlideEnd(index: number) {
+  console.log('滑动结束:', index);
+}
+
+export function SliderDemo() {
+  return (
+    <BezierSlider
+      style={{ position: 'relative', overflow: 'visible', width: ${width}, height: ${height} }}
+      icons={icons}
+${sliderOptions}
+      renderTrack={null}
+      onSelect={handleSelect}
+      onSlideEnd={handleSlideEnd}
+    />
+  );
+}`;
+}
+
+export function formatVueCodeTs(params, options = {}) {
+    const cfg = buildSliderConfig(params);
+    const { displaySize } = options;
+    const { width, height } = buildContainerSize(displaySize);
+    const sliderOptions = buildVueProps(cfg);
+    const icons = formatObjectBlock(ICONS, 2);
+
+    return `<script setup lang="ts">
+import { BezierSlider } from 'bezier-slider/vue';
+import type { NormalizedIcon, SliderIconInput } from 'bezier-slider';
+// vue2 版本
+// import { BezierSlider } from 'bezier-slider/vue2';
+
+const icons: SliderIconInput[] = ${icons};
+
+function onSelect(icon: NormalizedIcon, index: number) {
+  console.log('选中:', icon.name, index);
+}
+
+function onSlideEnd(index: number) {
+  console.log('滑动结束:', index);
+}
+</script>
+
+<template>
+  <BezierSlider
+    :root-style="{ position: 'relative', overflow: 'visible', width: '${width}px', height: '${height}px' }"
+    :icons="icons"
+${sliderOptions}
+    :render-track="null"
+    @select="onSelect"
+    @slide-end="onSlideEnd"
+  />
+</template>`;
+}
+
+export function formatMpCodeTs(params, options = {}) {
+    const cfg = buildSliderConfig(params);
+    const hint = options.displaySize ?? {};
+    const widthRpx = pxToRpx(hint.trackWidth ?? hint.width ?? 480);
+    const heightRpx = pxToRpx(hint.trackHeight ?? hint.height ?? 300);
+    const sliderOptions = buildMpProps(cfg);
+    const icons = formatObjectBlock(ICONS, 6);
+
+    return `<template>
+  <view class="slider-wrap">
+    <BezierSlider
+      :icons="icons"
+${sliderOptions}
+      @select="onSelect"
+      @slide-end="onSlideEnd"
+    />
+  </view>
+</template>
+
+<script lang="ts">
+import BezierSlider from 'bezier-slider/mp';
+import type { NormalizedIcon, SliderIconInput } from 'bezier-slider';
+
+export default {
+  components: { BezierSlider },
+  data() {
+    return {
+      icons: ${icons} as SliderIconInput[]
+    };
+  },
+  methods: {
+    onSelect(icon: NormalizedIcon, index: number) {
+      console.log('选中:', icon.name, index);
+    },
+    onSlideEnd(index: number) {
+      console.log('停留:', index);
+    }
+  }
+};
+</script>
+
+<style>
+.slider-wrap {
+  width: ${widthRpx}rpx;
+  height: ${heightRpx}rpx;
+}
+</style>`;
+}
+
+const CODE_FORMATTER_MATRIX = {
+    html: { js: formatHtmlCode, ts: formatHtmlCodeTs },
+    react: { js: formatReactCode, ts: formatReactCodeTs },
+    vue: { js: formatVueCode, ts: formatVueCodeTs },
+    mp: { js: formatMpCode, ts: formatMpCodeTs }
+};
+
+/** @deprecated 使用 getCodeFormatter */
 export const CODE_FORMATTERS = {
-    native: formatNativeCode,
+    html: formatHtmlCode,
     react: formatReactCode,
     vue: formatVueCode,
     mp: formatMpCode
 };
+
+export function getCodeFormatter(tab, lang = 'js') {
+    const platform = CODE_FORMATTER_MATRIX[tab] ?? CODE_FORMATTER_MATRIX.html;
+    return platform[lang === 'ts' ? 'ts' : 'js'] ?? platform.js;
+}

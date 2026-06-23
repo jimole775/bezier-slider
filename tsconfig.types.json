@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "moduleResolution": "node",
+    "jsx": "react-jsx"
+  },
+  "include": ["types/**/*.d.ts"]
+}
