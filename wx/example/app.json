@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/demo/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "bezier-slider 微信原生 Demo",
+    "navigationBarBackgroundColor": "#1a1a2e",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#1a1a2e"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

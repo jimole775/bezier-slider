@@ -1,0 +1,25 @@
+<view class="page">
+  <view class="header">
+    <text class="title">弧形图标滑块</text>
+    <text class="subtitle">微信原生小程序组件</text>
+  </view>
+
+  <view class="slider-wrap">
+    <bezier-slider
+      id="slider"
+      icons="{{icons}}"
+      initial-index="{{0}}"
+      bezier="{{bezier}}"
+      show-track="{{true}}"
+      icon-size="{{50}}"
+      bind:select="onSelect"
+      bind:slide-end="onSlideEnd"
+    />
+  </view>
+
+  <view class="selected">
+    <text class="selected-emoji">{{selectedEmoji}}</text>
+    <text class="selected-name">{{selectedName}}</text>
+    <text class="hint">← 拖动图标左右滑动 →</text>
+  </view>
+</view>

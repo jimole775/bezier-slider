@@ -1,0 +1,34 @@
+<view
+  class="bezier-slider-wx {{rootClass}}"
+  style="{{containerStyle}}"
+  catchtouchstart="onTouchStart"
+  catchtouchmove="onTouchMove"
+  catchtouchend="onTouchEnd"
+  catchtouchcancel="onTouchEnd"
+>
+  <canvas
+    wx:if="{{showTrack && layoutReady}}"
+    canvas-id="{{canvasId}}"
+    class="bezier-slider-wx__track-canvas"
+    style="width: {{containerWidth}}px; height: {{containerHeight}}px;"
+  />
+
+  <view
+    wx:for="{{iconStates}}"
+    wx:key="index"
+    class="bezier-slider-wx__icon {{item.visible ? '' : 'bezier-slider-wx__icon--hidden'}}"
+    style="{{item.styleStr}}"
+  >
+    <image
+      wx:if="{{item.visible && item.imageSrc}}"
+      class="bezier-slider-wx__icon-image"
+      src="{{item.imageSrc}}"
+      mode="aspectFit"
+    />
+    <text
+      wx:elif="{{item.visible}}"
+      class="bezier-slider-wx__icon-text"
+      style="{{item.textStyleStr}}"
+    >{{item.text}}</text>
+  </view>
+</view>

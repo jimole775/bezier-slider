@@ -2,7 +2,7 @@
 
 基于**二次贝塞尔曲线**的弧形图标滑块组件。图标沿平滑弧线排列，支持拖动、吸附、边界回弹，以及近大远小的视觉反馈。
 
-**支持平台**：现代浏览器（HTML + JavaScript / Vue 2 / Vue 3 / React）、**uni-app 小程序**（微信等，canvas 滑轨）。
+**支持平台**：现代浏览器（HTML + JavaScript / Vue 2 / Vue 3 / React）、**uni-app 小程序**、**微信原生小程序**（canvas 滑轨）。
 
 [demo](https://jimole775.github.io/bezier-slider/demo)（Web 演示，含参数调节与代码输出）
 
@@ -12,7 +12,7 @@
 
 - [功能介绍](#功能介绍)
 - [平台与入口](#平台与入口)
-- [快速开始](#快速开始)（[HTML](#方式一html--javascript) · [Vue](#方式二vue) · [React](#方式三react) · [小程序](#方式四uni-app-小程序) · [TypeScript](#typescript)）
+- [快速开始](#快速开始)（[HTML](#方式一html--javascript) · [Vue](#方式二vue) · [React](#方式三react) · [uni-app 小程序](#方式四uni-app-小程序) · [微信原生小程序](#方式五微信原生小程序) · [TypeScript](#typescript)）
 - [使用样例](#使用样例)（icons、bezier、回调等，以 HTML / DOM 版为主）
 - [API 参考](#api-参考)（[HTML / DOM](#html--dom-版-bezierslider) · [Vue](#vue-组件) · [React](#react-组件) · [小程序](#小程序组件)）
 - [样式说明](#样式说明)
@@ -41,7 +41,7 @@
 
 ## 平台与入口
 
-本包按**运行环境**拆成多条入口。DOM 版（默认 / Vue / React）与小程序版（`mp`）实现不同，**不可混用**：小程序里请用 `bezier-slider/mp`，浏览器 / uni-app H5 请用 DOM 版。
+本包按**运行环境**拆成多条入口。DOM 版（默认 / Vue / React）与小程序版（`mp` / 微信原生组件）实现不同，**不可混用**：uni-app 小程序用 `bezier-slider/mp`；微信原生用 npm 组件 `bezier-slider/index`；浏览器 / uni-app H5 请用 DOM 版。
 
 ### 包入口一览
 
@@ -52,6 +52,7 @@
 | `bezier-slider/vue2` | `dist/bezier-slider.vue2.{mjs,cjs}` | `vue2.js` | Vue 2 薄包装 → DOM 核心 | Vue 2 Web / uni-app H5 |
 | `bezier-slider/react` | `dist/bezier-slider.react.{mjs,cjs}` | `react.js` | React 18+ 薄包装 → DOM 核心 | React Web |
 | `bezier-slider/mp` | `dist/bezier-slider.mp.{mjs,cjs}` | `mp.js` | Vue 2 组件 + `BezierSliderEngine` + canvas | **uni-app 小程序** |
+| `bezier-slider/wx/bezier-slider` | `wx/bezier-slider/`（含 `engine.js`） | — | 微信原生 Component + `BezierSliderEngine` + canvas | **微信原生小程序** |
 
 - **ESM**：`import … from 'bezier-slider/…'` → 解析为 `dist/*.mjs`（Vite / Webpack 5+ 等）
 - **CJS**：`require('bezier-slider/…')` → 解析为 `dist/*.cjs`
@@ -67,11 +68,11 @@
 | Vue 2 / Vue 3（Web） | ✅ | `bezier-slider/vue2` 或 `/vue` | peer：`vue@>=2.6` 或 `>=3.4` |
 | React 18+（Web） | ✅ | `bezier-slider/react` | peer：`react`、`react-dom` |
 | uni-app **H5** | ✅ | `bezier-slider/vue2` 或 `/vue` | 走浏览器 DOM，**不要用 `/mp`** |
-| uni-app **微信小程序** 等小程序 | ✅ | `bezier-slider/mp` | canvas 滑轨 + 声明式图标，无 DOM |
+| uni-app **微信小程序** 等小程序 | ✅ | `bezier-slider/mp` | uni-app 项目；canvas 滑轨 + 声明式图标 |
+| **微信原生小程序**（非 uni-app） | ✅ | `bezier-slider/index` | npm 安装 + 构建 npm；见 [方式五](#方式五微信原生小程序) |
 | **TypeScript 项目** | ✅ | 同上各入口 | 包内自带 `types/`，无需 `@types/bezier-slider` |
 | uni-app **App**（vue 页面） | ⚠️ | `bezier-slider/mp` | 非 H5 时走 canvas 分支，未全面验证 |
 | Node.js / SSR | ❌ | — | DOM 版无 `document`；`mp` 依赖 `uni` API |
-| 微信原生（非 uni-app） | ❌ | — | 需自行移植算法，暂无原生 WXML 组件 |
 | React Native | ❌ | — | 暂无适配 |
 
 ### DOM 版 vs 小程序版
@@ -84,7 +85,7 @@
 | 图标 | emoji、图片、SVG path、font-icon 等 | 优先 **emoji / 图片 / 文字**；fontIcon、svgPath 支持有限 |
 | 核心 | `bezier-slider.native.js` | 共享 `BezierSliderEngine`（`src/core/`） |
 
-小程序版 Props / Events 与 Vue2 Web 版大体一致，另含 `show-track`、`iconSize` 等；完整说明见 [小程序组件](#小程序组件) 与 [方式四 · uni-app 小程序](#方式四uni-app-小程序)。
+小程序版 Props / Events 与 Vue2 Web 版大体一致，另含 `show-track`、`iconSize` 等；完整说明见 [小程序组件](#小程序组件)。uni-app 见 [方式四](#方式四uni-app-小程序)，微信原生见 [方式五](#方式五微信原生小程序)。
 
 ### 项目结构（简要）
 
@@ -94,11 +95,20 @@ src/
 ├── bezier-slider.native.js # DOM 版核心
 ├── mp/
 │   ├── BezierSliderMp.vue # uni-app 小程序组件
-│   ├── track-canvas.js    # canvas 滑轨绘制
+│   ├── track-canvas.js    # canvas 滑轨绘制（uni API）
 │   └── mp-bridge.js       # props → engine 选项映射
+├── wx/                    # 微信原生（engine.js 由 build 生成）
 ├── components/            # Vue / React / Vue2 Web 包装
 ├── mp-component.js        # bezier-slider/mp 入口
 └── index.js               # bezier-slider 默认入口
+
+wx/
+├── bezier-slider/         # 微信原生自定义组件（第三方直接使用）
+│   ├── index.js / wxml / wxss / json
+│   ├── engine.js          # 打包后的 BezierSliderEngine
+│   ├── options.js
+│   └── track-canvas.js
+└── example/               # 微信开发者工具可导入的示例工程
 ```
 
 ---
@@ -391,6 +401,95 @@ export default {
 
 ---
 
+### 方式五：微信原生小程序
+
+适用于**不使用 uni-app**、直接开发微信原生小程序的项目。组件位于 `wx/bezier-slider/`，与 uni-app 版共用 `BezierSliderEngine`，交互与视觉效果一致。
+
+**安装**
+
+```bash
+npm install bezier-slider
+```
+
+在微信开发者工具中：**工具 → 构建 npm**。构建完成后，`miniprogram_npm/bezier-slider/wx/bezier-slider/` 下即为可用组件。
+
+**页面 JSON**
+
+```json
+{
+  "usingComponents": {
+    "bezier-slider": "bezier-slider/index"
+  }
+}
+```
+
+**页面 WXML**
+
+```xml
+<view class="slider-wrap">
+  <bezier-slider
+    id="slider"
+    icons="{{icons}}"
+    initial-index="{{0}}"
+    bezier="{{bezier}}"
+    show-track="{{true}}"
+    icon-size="{{50}}"
+    bind:select="onSelect"
+    bind:slide-end="onSlideEnd"
+  />
+</view>
+```
+
+**页面 JS**
+
+```javascript
+Page({
+  data: {
+    icons: [
+      { name: '首页', emoji: '🏠', color: '#8b5cf6' },
+      { name: '搜索', emoji: '🔍', color: '#ec4899' },
+      { name: '消息', emoji: '💬', color: '#06b6d4' },
+      { name: '设置', emoji: '⚙️', color: '#22c55e' }
+    ],
+    bezier: {
+      curveSmooth: 0.1,
+      localBend: { t: 0.36, degrees: 38 }
+    }
+  },
+  onSelect(event) {
+    const { icon, index } = event.detail;
+    console.log('选中:', icon.name, index);
+  },
+  onSlideEnd(event) {
+    console.log('停留:', event.detail.index);
+  }
+});
+```
+
+**页面 WXSS**
+
+```css
+.slider-wrap {
+  width: 686rpx;
+  height: 320rpx;
+}
+```
+
+**要点**
+
+| 项 | 说明 |
+|----|------|
+| 组件路径 | `bezier-slider/index`（构建 npm 后，相对页面 JSON） |
+| 容器尺寸 | 外层 `view` 必须给出宽高（`rpx` / `px`），组件内部会 `boundingClientRect` 测量 |
+| 滑轨 | 默认 canvas 绘制；`show-track="{{false}}"` 可关闭后用背景图对齐 |
+| 图标 | 推荐 **emoji / 图片 URL / 文字**；`fontIcon`、`svgPath` 支持有限 |
+| 方法调用 | `this.selectComponent('#slider').slideTo(2)` 等，见 [小程序组件 · Methods](#methodsref) |
+| 本地示例 | 仓库内 `wx/example/` 可用微信开发者工具直接导入（相对路径引用组件） |
+
+Props / Events / Methods 与 [小程序组件](#小程序组件)（uni-app 版）一致；微信版事件参数通过 `event.detail` 传递。
+
+---
+
 ### TypeScript
 
 包内自带类型声明（`types/` 目录），**库源码仍为 JavaScript**，使用方在 TS 项目中可直接获得类型提示，无需安装 `@types/bezier-slider`。
@@ -402,6 +501,7 @@ export default {
 | `bezier-slider/vue2` | `types/vue2.d.ts` |
 | `bezier-slider/react` | `types/react.d.ts` |
 | `bezier-slider/mp` | `types/mp.d.ts` |
+| `bezier-slider/wx/bezier-slider` | `types/wx.d.ts`（properties / 事件 detail / methods） |
 
 共享类型（`BezierSliderOptions`、`SliderIconInput`、`BezierConfig`、`LayoutState` 等）从各入口 re-export，通常写：
 
@@ -860,7 +960,7 @@ console.log(BezierSlider.DEFAULTS);
 
 ### 小程序组件
 
-入口：`import BezierSlider from 'bezier-slider/mp'`。基于 `BezierSliderEngine`，滑轨由组件内置 canvas（小程序）或 SVG（H5 编译分支）绘制，**无** `renderTrack` / `onLayout` 回调。
+入口：`import BezierSlider from 'bezier-slider/mp'`（uni-app）或页面 JSON 引用 `bezier-slider/index`（微信原生，构建 npm 后）。基于 `BezierSliderEngine`，滑轨由组件内置 canvas 绘制，**无** `renderTrack` / `onLayout` 回调。
 
 #### Props
 
@@ -967,4 +1067,16 @@ console.log(BezierSlider.DEFAULTS);
 | `.bezier-slider-mp__icon-text` | emoji / 文字图标 |
 | `.bezier-slider-mp__icon-image` | 图片图标 |
 
-滑轨样式内置于组件；若 `:show-track="false"`，可在父级 `view` 用背景图对齐轨迹。图标 `color` 字段仍作用于圆形背景色。
+滑轨样式内置于组件；若 `:show-track="false"` / `show-track="{{false}}"`，可在父级 `view` 用背景图对齐轨迹。图标 `color` 字段仍作用于圆形背景色。
+
+### 微信原生版
+
+类名与 uni-app 版对应，前缀为 `.bezier-slider-wx`：
+
+| 类名 | 说明 |
+|------|------|
+| `.bezier-slider-wx` | 根容器，需外层给出宽高 |
+| `.bezier-slider-wx__track-canvas` | canvas 滑轨层 |
+| `.bezier-slider-wx__icon` | 图标圆形容器 |
+| `.bezier-slider-wx__icon-text` | emoji / 文字图标 |
+| `.bezier-slider-wx__icon-image` | 图片图标 |

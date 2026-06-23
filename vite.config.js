@@ -17,7 +17,8 @@ export default defineConfig(({ command }) => ({
         'bezier-slider.vue': './src/vue-component.js',
         'bezier-slider.vue2': './src/vue2-component.js',
         'bezier-slider.react': './src/react-component.js',
-        'bezier-slider.mp': './src/mp-component.js'
+        'bezier-slider.mp': './src/mp-component.js',
+        'bezier-slider.wx-engine': './src/wx/engine-entry.js'
       },
       name: 'BezierSlider',
       formats: ['es', 'cjs'],

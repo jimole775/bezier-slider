@@ -1,0 +1,40 @@
+.bezier-slider-wx {
+  position: relative;
+  overflow: visible;
+}
+
+.bezier-slider-wx__track-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.bezier-slider-wx__icon {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+}
+
+.bezier-slider-wx__icon--hidden {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.bezier-slider-wx__icon-text {
+  font-size: 22px;
+  line-height: 1;
+  color: #fff;
+}
+
+.bezier-slider-wx__icon-image {
+  width: 62%;
+  height: 62%;
+  border-radius: 4px;
+}

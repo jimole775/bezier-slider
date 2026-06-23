@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "bezier-slider": "../../bezier-slider/index"
+  },
+  "navigationBarTitleText": "弧形图标滑块"
+}

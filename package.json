@@ -1,7 +1,7 @@
 {
   "name": "bezier-slider",
   "version": "1.2.0",
-  "description": "二次贝塞尔弧形图标滑块组件，支持 HTML、Vue 2、Vue 3、React 与 uni-app 小程序",
+  "description": "二次贝塞尔弧形图标滑块组件，支持 HTML、Vue 2、Vue 3、React、uni-app 与微信原生小程序",
   "main": "dist/bezier-slider.cjs",
   "module": "dist/bezier-slider.mjs",
   "types": "./types/bezier-slider.d.ts",
@@ -36,18 +36,24 @@
       "require": "./dist/bezier-slider.mp.cjs",
       "default": "./mp.js"
     },
+    "./wx/bezier-slider": {
+      "types": "./types/wx.d.ts",
+      "default": "./wx/bezier-slider/index.js"
+    },
     "./dist/*": "./dist/*"
   },
+  "miniprogram": "wx/bezier-slider",
   "files": [
     "dist",
     "types",
     "vue.js",
     "vue2.js",
     "react.js",
-    "mp.js"
+    "mp.js",
+    "wx"
   ],
   "scripts": {
-    "build": "vite build && node scripts/generate-entry-shims.mjs",
+    "build": "vite build && node scripts/generate-entry-shims.mjs && node scripts/build-wx.mjs",
     "prepublishOnly": "npm run build",
     "build:demo": "node scripts/publish-demo-pages.mjs",
     "preview:demo": "vite preview --config vite.demo.config.js",

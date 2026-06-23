@@ -1,0 +1,4 @@
+{
+  "desc": "bezier-slider wx example",
+  "rules": [{ "action": "allow", "page": "*" }]
+}
