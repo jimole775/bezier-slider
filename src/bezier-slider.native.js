@@ -59,6 +59,8 @@
         },
         onSlideEnd: null,           // 滑动吸附完成回调 (index) => {}
         onSelect: null,              // 图标进入中心选中回调 (icon, index) => {}
+        onDragStart: null,           // 用户开始拖动 ( ) => {}
+        onDragMove: null,            // 拖动/吸附过程中 (payload) => {}
         onLayout: null,              // 布局更新回调 (layout) => {}，由调用方绘制滑轨
         initialIndex: 0              // 初始化时停在中心的图标下标
     };
@@ -504,6 +506,9 @@
             this.currentIndex = initialIndex;
             this.currentOffset = this.getOffsetForIndex(initialIndex);
             this.isDragging = false;
+            this.isAnimating = false;
+            this.isFollowingExternal = false;
+            this.isUserGesture = false;
             this.isSliding = false;     // 是否处于拖动/吸附中（用于禁用文字选中）
             this.startX = 0;
             this.startOffset = 0;
@@ -626,17 +631,27 @@
         _onMouseDown(e) {
             this._cancelAnimation();
             this.isDragging = true;
+            this.isUserGesture = true;
+            this.isFollowingExternal = false;
             this._setSliding(true);
             this.startX = e.clientX;
             this.startOffset = this.currentOffset;
+            if (typeof this.options.onDragStart === 'function') {
+                this.options.onDragStart();
+            }
         }
 
         _onTouchStart(e) {
             this._cancelAnimation();
             this.isDragging = true;
+            this.isUserGesture = true;
+            this.isFollowingExternal = false;
             this._setSliding(true);
             this.startX = e.touches?.[0]?.clientX || e.clientX;
             this.startOffset = this.currentOffset;
+            if (typeof this.options.onDragStart === 'function') {
+                this.options.onDragStart();
+            }
         }
 
         /** 合法 offset 范围：首图标 +maxOffset，末图标 -maxOffset */
@@ -673,6 +688,36 @@
                 cancelAnimationFrame(this._animFrameId);
                 this._animFrameId = null;
             }
+            this.isAnimating = false;
+        }
+
+        _shouldEmitSelect() {
+            return !this.isDragging && !this.isAnimating && !this.isFollowingExternal;
+        }
+
+        getDragPayload() {
+            const offset = this.currentOffset;
+            return {
+                offset,
+                indexFloat: this.maxOffset - offset,
+                index: this.getIndexFromOffset(offset)
+            };
+        }
+
+        _emitDragMove() {
+            if (this.isUserGesture && typeof this.options.onDragMove === 'function') {
+                this.options.onDragMove(this.getDragPayload());
+            }
+        }
+
+        _finishUserGesture(index) {
+            if (!this.isUserGesture) return;
+            this.isUserGesture = false;
+            this.isFollowingExternal = false;
+            this._setSliding(false);
+            if (typeof this.options.onSlideEnd === 'function') {
+                this.options.onSlideEnd(index);
+            }
         }
 
         /**
@@ -684,11 +729,13 @@
          */
         _animateOffsetTo(targetOffset, duration, ease, onComplete) {
             this._cancelAnimation();
+            this.isAnimating = true;
             const startOffsetAnim = this.currentOffset;
             const diff = targetOffset - startOffsetAnim;
             const startTime = performance.now();
 
             if (Math.abs(diff) < 0.0001) {
+                this.isAnimating = false;
                 onComplete?.();
                 return;
             }
@@ -700,11 +747,13 @@
 
                 this.currentOffset = startOffsetAnim + diff * eased;
                 this.updatePositions(this.currentOffset);
+                this._emitDragMove();
 
                 if (progress < 1) {
                     this._animFrameId = requestAnimationFrame(animate);
                 } else {
                     this._animFrameId = null;
+                    this.isAnimating = false;
                     this.currentOffset = targetOffset;
                     this.updatePositions(this.currentOffset);
                     onComplete?.();
@@ -739,6 +788,7 @@
             newOffset = this._applyRubberBand(newOffset);
             this.currentOffset = newOffset;
             this.updatePositions(this.currentOffset);
+            this._emitDragMove();
         }
 
         _onEnd() {
@@ -765,11 +815,8 @@
                 this.options.rubberBandDuration,
                 (t) => this._easeOutBack(t),
                 () => {
-                    this._setSliding(false);
                     this.currentIndex = this.getIndexFromOffset(targetOffset);
-                    if (typeof this.options.onSlideEnd === 'function') {
-                        this.options.onSlideEnd(this.currentIndex);
-                    }
+                    this._finishUserGesture(this.currentIndex);
                 }
             );
         }
@@ -878,6 +925,13 @@
                     .map((state) => state.index)
             );
 
+            const nearest = iconStates.slice().sort((a, b) => a.dist - b.dist)[0];
+            if (nearest) {
+                visibleIndexes.add(nearest.index);
+            }
+
+            let selectedIndex = this.currentIndex;
+
             iconStates.forEach(({ item, index, t }) => {
                 const point = this.bezierPoint(t);
                 const visible = visibleIndexes.has(index);
@@ -908,16 +962,23 @@
 
                 const isCenter = normalizedDistance < 0.15;
                 if (isCenter) {
-                    this.currentIndex = index;
-                    if (typeof this.options.onSelect === 'function') {
-                        this.options.onSelect(item.data, index);
-                    }
+                    selectedIndex = index;
                 }
 
                 item.element.style.boxShadow = this.options.centerGlowEnabled && isCenter
                     ? `0 10px 30px ${item.data.color}70`
                     : `0 4px 15px ${item.data.color}30`;
             });
+
+            if (
+                this._shouldEmitSelect() &&
+                selectedIndex !== this.currentIndex
+            ) {
+                this.currentIndex = selectedIndex;
+                if (typeof this.options.onSelect === 'function') {
+                    this.options.onSelect(this.icons[selectedIndex], selectedIndex);
+                }
+            }
         }
 
         /** 重新测量布局，通知调用方绘制滑轨并刷新图标位置 */
@@ -941,13 +1002,64 @@
                 this.options.snapDuration,
                 (t) => this._easeOutCubic(t),
                 () => {
-                    this._setSliding(false);
                     this.currentIndex = closestIndex;
-                    if (typeof this.options.onSlideEnd === 'function') {
-                        this.options.onSlideEnd(closestIndex);
-                    }
+                    this._finishUserGesture(closestIndex);
                 }
             );
+        }
+
+        followSwiper({ baseIndex, dx, width }) {
+            if (!width) return;
+            this._cancelAnimation();
+            this.isFollowingExternal = true;
+            const baseOffset = this.getOffsetForIndex(baseIndex);
+            const offset = baseOffset - dx / width;
+            const { min, max } = this._getOffsetBounds();
+            this.currentOffset = Math.max(min, Math.min(max, offset));
+            this.currentIndex = this.getIndexFromOffset(this.currentOffset);
+            this.updatePositions(this.currentOffset);
+        }
+
+        endExternalFollow(index) {
+            this.isFollowingExternal = false;
+            this.slideTo(index, false);
+        }
+
+        animateToIndex(index, duration, onComplete) {
+            const safeIndex = this._clampIndex(index);
+            const targetOffset = this.getOffsetForIndex(safeIndex);
+            this._cancelAnimation();
+            this.isFollowingExternal = true;
+
+            if (Math.abs(this.currentOffset - targetOffset) < 0.001) {
+                this.currentIndex = safeIndex;
+                this.isFollowingExternal = false;
+                onComplete?.();
+                return;
+            }
+
+            this._animateOffsetTo(
+                targetOffset,
+                duration,
+                (t) => this._easeOutCubic(t),
+                () => {
+                    this.currentIndex = safeIndex;
+                    this.isFollowingExternal = false;
+                    onComplete?.();
+                }
+            );
+        }
+
+        followIndexFloat(indexFloat) {
+            if (!Number.isFinite(indexFloat)) return;
+            if (this.isAnimating && this.isFollowingExternal) return;
+            this._cancelAnimation();
+            this.isFollowingExternal = true;
+            const offset = this.maxOffset - indexFloat;
+            const { min, max } = this._getOffsetBounds();
+            this.currentOffset = Math.max(min, Math.min(max, offset));
+            this.currentIndex = this.getIndexFromOffset(this.currentOffset);
+            this.updatePositions(this.currentOffset);
         }
 
         /** 获取当前选中图标的下标 */
